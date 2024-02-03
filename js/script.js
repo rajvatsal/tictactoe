@@ -17,18 +17,25 @@ const gameBoard = (function () {
 	}
 
 	function isGameOver(plyr) {
+		plyr = plyr || { mark: "" };
+		filled = 0;
 		for (let i = 0; i < _board.length; i++) {
 			let vert = 0,
 				horz = 0,
 				diag = 0;
+
 			for (let j = 0; j < _board.length; j++) {
 				if (_board[i][j] === plyr.mark) horz++;
 				if (_board[j][i] === plyr.mark) vert++;
 				if (_board[j][j] === plyr.mark) diag++;
 				else if (_board[i][_board[i].length - 1 - i] === plyr.mark) diag++;
+				if (!_board[i][j] !== "*") filled++;
 			}
 			if (diag === 3 || vert === 3 || horz === 3) return true;
 		}
+		console.log(filled);
+		if (filled === 9) return "draw";
+		else return false;
 	}
 
 	return { render, addInput, isGameOver };
