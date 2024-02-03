@@ -26,14 +26,12 @@ const gameBoard = (function () {
 	}
 
 	function isDraw() {
-		filled = 0;
 		for (let i of _board) {
 			for (let j of i) {
-				if (j !== "*") filled++;
+				if (j === "*") return false;
 			}
 		}
-		if (filled === 9) return true;
-		else return false;
+		return true;
 	}
 
 	function isWinner(plyr) {
