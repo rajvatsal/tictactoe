@@ -17,7 +17,7 @@ const gameBoard = (function () {
 	}
 
 	function addInput(x, y) {
-		if (_board[x][y] !== "*") {
+		if (!x || !y || _board[x][y] !== "*") {
 			[x, y] = prompt(
 				"This cell is filled. Enter your x and y value again with a space.",
 			).split(" ");
@@ -35,18 +35,19 @@ const gameBoard = (function () {
 	}
 
 	function isWinner(plyr) {
+		let diagR = 0;
 		for (let i = 0; i < _board.length; i++) {
 			let vert = 0,
 				horz = 0,
-				diagR = 0,
 				diagL = 0;
 
 			for (let j = 0; j < _board.length; j++) {
 				if (_board[i][j] === plyr.mark) horz++;
 				if (_board[j][i] === plyr.mark) vert++;
 				if (_board[j][j] === plyr.mark) diagL++;
-				if (_board[i][_board[i].length - 1 - i] === plyr.mark) diagR++;
 			}
+
+			if (_board[i][_board[i].length - 1 - i] === plyr.mark) diagR++;
 			if (diagR === 3 || vert === 3 || horz === 3 || diagL === 3) {
 				_winner = plyr.name;
 				return true;
@@ -112,16 +113,17 @@ const renderArts = (function () {
 const game = function () {
 	const { isWinner, render, isDraw, getWinner } = gameBoard;
 	while (true) {
-		render();
 		player[0].makeMove(
 			prompt("Player one X-coordinate:"),
 			prompt("Player one Y-coordinate:"),
 		);
+		render();
 		if (isWinner(player[0]) || isDraw()) break;
 		player[1].makeMove(
 			prompt("Player two X-coordinate:"),
 			prompt("Player two Y-coordinate:"),
 		);
+		render();
 		if (isWinner(player[1]) || isDraw()) break;
 	}
 
