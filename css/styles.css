@@ -1,0 +1,8 @@
+:root {
+  height: 100vh;
+}
+
+header>h1 {
+  color: steelblue;
+  text-align: center;
+}
