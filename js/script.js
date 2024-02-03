@@ -6,6 +6,10 @@ const gameBoard = (function () {
 		[_emptyCell, _emptyCell, _emptyCell],
 	];
 
+	let _winner = "";
+
+	const getWinner = () => _winner;
+
 	function render() {
 		for (let i of _board) {
 			console.log(i.join(" "));
@@ -13,33 +17,48 @@ const gameBoard = (function () {
 	}
 
 	function addInput(x, y) {
-		if (_board[x][y] !== "*") return alert("Invalid");
+		if (_board[x][y] !== "*") {
+			[x, y] = prompt(
+				"This cell is filled. Enter your x and y value again with a space.",
+			).split(" ");
+		}
 		_board[x][y] = this.mark;
 	}
 
-	function isGameOver(plyr) {
-		plyr = plyr || { mark: "" };
+	function isDraw() {
 		filled = 0;
+		for (let i of _board) {
+			for (let j of i) {
+				if (j !== "*") filled++;
+			}
+		}
+		if (filled === 9) return true;
+		else return false;
+	}
+
+	function isWinner(plyr) {
+		plyr = plyr || { mark: "" };
 		for (let i = 0; i < _board.length; i++) {
 			let vert = 0,
 				horz = 0,
-				diag = 0;
+				diagR = 0,
+				diagL = 0;
 
 			for (let j = 0; j < _board.length; j++) {
 				if (_board[i][j] === plyr.mark) horz++;
 				if (_board[j][i] === plyr.mark) vert++;
-				if (_board[j][j] === plyr.mark) diag++;
-				else if (_board[i][_board[i].length - 1 - i] === plyr.mark) diag++;
-				if (!_board[i][j] === "*") filled++;
+				if (_board[j][j] === plyr.mark) diagL++;
+				if (_board[i][_board[i].length - 1 - i] === plyr.mark) diagR++;
 			}
-			if (diag === 3 || vert === 3 || horz === 3) return true;
+			if (diagR === 3 || vert === 3 || horz === 3 || diagL === 3) {
+				_winner = plyr.name;
+				return true;
+			}
 		}
-		console.log(filled);
-		if (filled === 9) return "draw";
-		else return false;
+		return false;
 	}
 
-	return { render, addInput, isGameOver };
+	return { render, addInput, isWinner, isDraw, getWinner };
 })();
 
 const player = (function () {
@@ -58,19 +77,23 @@ const player = (function () {
 const renderArts = (function () {
 	let _arts = {
 		header: `
-▄▄▄▄▄▪   ▄▄·     ▄▄▄▄▄ ▄▄▄·  ▄▄·     ▄▄▄▄▄      ▄▄▄ .
-•██  ██ ▐█ ▌▪    •██  ▐█ ▀█ ▐█ ▌▪    •██  ▪     ▀▄.▀·
- ▐█.▪▐█·██ ▄▄     ▐█.▪▄█▀▀█ ██ ▄▄     ▐█.▪ ▄█▀▄ ▐▀▀▪▄
- ▐█▌·▐█▌▐███▌     ▐█▌·▐█ ▪▐▌▐███▌     ▐█▌·▐█▌.▐▌▐█▄▄▌
- ▀▀▀ ▀▀▀·▀▀▀      ▀▀▀  ▀  ▀ ·▀▀▀      ▀▀▀  ▀█▄▀▪ ▀▀▀ 
-		`,
-		end: `
- ▄▄ •  ▄▄▄· • ▌ ▄ ·. ▄▄▄ .           ▌ ▐·▄▄▄ .▄▄▄  
-▐█ ▀ ▪▐█ ▀█ ·██ ▐███▪▀▄.▀·    ▪     ▪█·█▌▀▄.▀·▀▄ █·
-▄█ ▀█▄▄█▀▀█ ▐█ ▌▐▌▐█·▐▀▀▪▄     ▄█▀▄ ▐█▐█•▐▀▀▪▄▐▀▀▄ 
-▐█▄▪▐█▐█ ▪▐▌██ ██▌▐█▌▐█▄▄▌    ▐█▌.▐▌ ███ ▐█▄▄▌▐█•█▌
-·▀▀▀▀  ▀  ▀ ▀▀  █▪▀▀▀ ▀▀▀      ▀█▄▀▪. ▀   ▀▀▀ .▀  ▀
-		`,
+ ______                ______                     ______                  
+/\\__  _\\__            /\\__  _\\                   /\\__  _\\                 
+\\/_/\\ \\/\\_\\    ___    \\/_/\\ \\/    __      ___    \\/_/\\ \\/   ___      __   
+   \\ \\ \\/\\ \\  /\'___\\     \\ \\ \\  /\'__\'\\   /\'___\\     \\ \\ \\  / __\'\\  /\'__\'\\ 
+    \\ \\ \\ \\ \\/\\ \\__/      \\ \\ \\/\\ \\L\\.\\_/\\ \\__/      \\ \\ \\/\\ \\L\\ \\/\\  __/ 
+     \\ \\_\\ \\_\\ \\____\\      \\ \\_\\ \\__/.\\_\\ \\____\\      \\ \\_\\ \\____/\\ \\____\\
+      \\/_/\\/_/\\/____/       \\/_/\\/__/\\/_/\\/____/       \\/_/\\/___/  \\/____/
+
+`,
+		winner: `
+            __                                 
+ __  __  __/\\_\\    ___     ___      __   _ __  
+/\\ \\/\\ \\/\\ \\/\\ \\ /\' _ \`\\ /\' _ \`\\  /\'__\`\\/\\\`\'__\\
+\\ \\ \\_/ \\_/ \\ \\ \\/\\ \\/\\ \\/\\ \\/\\ \\/\\  __/\\ \\ \\/ 
+ \\ \\___x___/\'\\ \\_\\ \\_\\ \\_\\ \\_\\ \\_\\ \\____\\\\ \\_\\ 
+  \\/__//__/   \\/_/\\/_/\\/_/\\/_/\\/_/\\/____/ \\/_/ 
+`,
 		draw: `
 ·▄▄▄▄  ▄▄▄   ▄▄▄· ▄▄▌ ▐ ▄▌
 ██▪ ██ ▀▄ █·▐█ ▀█ ██· █▌▐█
@@ -81,27 +104,30 @@ const renderArts = (function () {
 	};
 	console.log(_arts.header);
 
-	const gameOver = () => {
-		if (gameBoard.isGameOver() === "draw") console.log(_arts.draw);
-		else console.log(_arts.end);
+	const gameOver = (val) => {
+		if (val) console.log(_arts.winner, val);
+		else console.log(_arts.draw);
 	};
 
 	return { gameOver };
 })();
 
-const game = (function () {
-	const { isGameOver, render } = gameBoard;
-	while (isGameOver() === false) {
+const game = function () {
+	const { isWinner, render, isDraw, getWinner } = gameBoard;
+	while (true) {
 		render();
 		player[0].makeMove(
 			prompt("Player one X-coordinate:"),
 			prompt("Player one Y-coordinate:"),
 		);
+		if (isWinner(player[0]) || isDraw()) break;
 		player[1].makeMove(
 			prompt("Player two X-coordinate:"),
 			prompt("Player two Y-coordinate:"),
 		);
+		if (isWinner(player[1]) || isDraw()) break;
 	}
 
-	renderArts.gameOver();
-})();
+	renderArts.gameOver(getWinner());
+};
+game();
