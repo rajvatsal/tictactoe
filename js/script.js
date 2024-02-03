@@ -13,6 +13,7 @@ const gameBoard = (function () {
 	}
 
 	function addInput(x, y) {
+		if (_board[x][y] !== "*") return alert("Invalid");
 		_board[x][y] = this.mark;
 	}
 
