@@ -110,7 +110,7 @@ const renderArts = (function () {
 	return { gameOver };
 })();
 
-const game = function () {
+const game = (function () {
 	const { isWinner, render, isDraw, getWinner } = gameBoard;
 	while (true) {
 		player[0].makeMove(
@@ -128,5 +128,4 @@ const game = function () {
 	}
 
 	renderArts.gameOver(getWinner());
-};
-game();
+})();
