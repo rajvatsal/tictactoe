@@ -29,7 +29,7 @@ const gameBoard = (function () {
 				if (_board[j][i] === plyr.mark) vert++;
 				if (_board[j][j] === plyr.mark) diag++;
 				else if (_board[i][_board[i].length - 1 - i] === plyr.mark) diag++;
-				if (!_board[i][j] !== "*") filled++;
+				if (!_board[i][j] === "*") filled++;
 			}
 			if (diag === 3 || vert === 3 || horz === 3) return true;
 		}
@@ -70,11 +70,37 @@ const renderArts = (function () {
 ▐█▄▪▐█▐█ ▪▐▌██ ██▌▐█▌▐█▄▄▌    ▐█▌.▐▌ ███ ▐█▄▄▌▐█•█▌
 ·▀▀▀▀  ▀  ▀ ▀▀  █▪▀▀▀ ▀▀▀      ▀█▄▀▪. ▀   ▀▀▀ .▀  ▀
 		`,
+		draw: `
+·▄▄▄▄  ▄▄▄   ▄▄▄· ▄▄▌ ▐ ▄▌
+██▪ ██ ▀▄ █·▐█ ▀█ ██· █▌▐█
+▐█· ▐█▌▐▀▀▄ ▄█▀▀█ ██▪▐█▐▐▌
+██. ██ ▐█•█▌▐█ ▪▐▌▐█▌██▐█▌
+▀▀▀▀▀• .▀  ▀ ▀  ▀  ▀▀▀▀ ▀▪
+		`,
 	};
 	console.log(_arts.header);
 
-	const gameOver = () => console.log(_arts.end);
+	const gameOver = () => {
+		if (gameBoard.isGameOver() === "draw") console.log(_arts.draw);
+		else console.log(_arts.end);
+	};
 
 	return { gameOver };
 })();
-gameBoard.render();
+
+const game = (function () {
+	const { isGameOver, render } = gameBoard;
+	while (isGameOver() === false) {
+		render();
+		player[0].makeMove(
+			prompt("Player one X-coordinate:"),
+			prompt("Player one Y-coordinate:"),
+		);
+		player[1].makeMove(
+			prompt("Player two X-coordinate:"),
+			prompt("Player two Y-coordinate:"),
+		);
+	}
+
+	renderArts.gameOver();
+})();
