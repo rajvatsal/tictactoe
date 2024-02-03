@@ -37,7 +37,6 @@ const gameBoard = (function () {
 	}
 
 	function isWinner(plyr) {
-		plyr = plyr || { mark: "" };
 		for (let i = 0; i < _board.length; i++) {
 			let vert = 0,
 				horz = 0,
