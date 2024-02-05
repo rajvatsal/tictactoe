@@ -24,7 +24,7 @@ const game = (function () {
 		}
 
 		function addInput(x, y) {
-			if (!x < _columns || !y < _rows || _board[x][y] !== "*") {
+			if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell) {
 				[x, y] = prompt(
 					"Invalid Input. Enter your x and y value again with a space.",
 				).split(" ");
