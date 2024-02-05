@@ -1,5 +1,5 @@
 const game = (function () {
-	const gameBoard = (function () {
+	const Gameboard = (function () {
 		const _emptyCell = "*";
 		let _board = [
 			[_emptyCell, _emptyCell, _emptyCell],
@@ -62,7 +62,7 @@ const game = (function () {
 
 	const player = (function () {
 		function _createPlayer(name, mark) {
-			const { addInput: makeMove } = gameBoard;
+			const { addInput: makeMove } = Gameboard;
 			return { name, mark, makeMove };
 		}
 
@@ -112,7 +112,7 @@ const game = (function () {
 	})();
 
 	function init() {
-		const { isWinner, render, isDraw, getWinner } = gameBoard;
+		const { isWinner, render, isDraw, getWinner } = Gameboard;
 		while (true) {
 			player[0].makeMove(
 				prompt("Player one X-coordinate:"),
