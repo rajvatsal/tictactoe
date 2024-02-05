@@ -1,12 +1,14 @@
 const game = (function () {
 	const Gameboard = (function () {
 		const _emptyCell = "*";
+		const _rows = 3;
+		const _columns = 3;
 		const _board = [];
 
 		//Create a 3X3 board
-		for (let i = 0; i < 3; i++) {
+		for (let i = 0; i < _rows; i++) {
 			_board[i] = [];
-			for (let j = 0; j < 3; j++) {
+			for (let j = 0; j < _columns; j++) {
 				_board[i].push(_emptyCell);
 			}
 		}
@@ -22,7 +24,7 @@ const game = (function () {
 		}
 
 		function addInput(x, y) {
-			if (x > 2 || y > 2 || _board[x][y] !== "*") {
+			if (!x < _columns || !y < _rows || _board[x][y] !== "*") {
 				[x, y] = prompt(
 					"Invalid Input. Enter your x and y value again with a space.",
 				).split(" ");
@@ -53,7 +55,12 @@ const game = (function () {
 				}
 
 				if (_board[i][_board[i].length - 1 - i] === this.mark) diagR++;
-				if (diagR === 3 || vert === 3 || horz === 3 || diagL === 3) {
+				if (
+					diagR === _rows ||
+					vert === _columns ||
+					horz === _rows ||
+					diagL === _rows
+				) {
 					_winner = this.name;
 					return true;
 				}
