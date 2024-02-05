@@ -23,7 +23,7 @@ const game = (function () {
 			}
 		}
 
-		function addInput(x, y) {
+		function placeMark(x, y) {
 			if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell) {
 				[x, y] = prompt(
 					"Invalid Input. Enter your x and y value again with a space.",
@@ -68,13 +68,13 @@ const game = (function () {
 			return false;
 		}
 
-		return { render, addInput, isWinner, isDraw, getWinner };
+		return { render, placeMark, isWinner, isDraw, getWinner };
 	})();
 
 	const Players = (function () {
 		function _createPlayers(name, mark) {
-			const { addInput: makeMove, isWinner } = Gameboard;
-			return { name, mark, makeMove, isWinner };
+			const { placeMark, isWinner } = Gameboard;
+			return { name, mark, placeMark, isWinner };
 		}
 
 		const ppl = [];
@@ -125,13 +125,13 @@ const game = (function () {
 	function init() {
 		const { render, isDraw, getWinner } = Gameboard;
 		while (true) {
-			Players[0].makeMove(
+			Players[0].placeMark(
 				prompt("Player one X-coordinate:"),
 				prompt("Player one Y-coordinate:"),
 			);
 			render();
 			if (Players[0].isWinner() || isDraw()) break;
-			Players[1].makeMove(
+			Players[1].placeMark(
 				prompt("Player two X-coordinate:"),
 				prompt("Player two Y-coordinate:"),
 			);
@@ -141,5 +141,5 @@ const game = (function () {
 
 		renderArts.gameOver(getWinner());
 	}
-	return { init };
+	return { init, playerOne: Players[0], playerTwo: Players[1] };
 })();
