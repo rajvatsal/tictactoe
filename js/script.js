@@ -35,7 +35,7 @@ const game = (function () {
 			return true;
 		}
 
-		function isWinner(plyr) {
+		function isWinner() {
 			let diagR = 0;
 			for (let i = 0; i < _board.length; i++) {
 				let vert = 0,
@@ -43,14 +43,14 @@ const game = (function () {
 					diagL = 0;
 
 				for (let j = 0; j < _board.length; j++) {
-					if (_board[i][j] === plyr.mark) horz++;
-					if (_board[j][i] === plyr.mark) vert++;
-					if (_board[j][j] === plyr.mark) diagL++;
+					if (_board[i][j] === this.mark) horz++;
+					if (_board[j][i] === this.mark) vert++;
+					if (_board[j][j] === this.mark) diagL++;
 				}
 
-				if (_board[i][_board[i].length - 1 - i] === plyr.mark) diagR++;
+				if (_board[i][_board[i].length - 1 - i] === this.mark) diagR++;
 				if (diagR === 3 || vert === 3 || horz === 3 || diagL === 3) {
-					_winner = plyr.name;
+					_winner = this.name;
 					return true;
 				}
 			}
@@ -62,8 +62,8 @@ const game = (function () {
 
 	const Players = (function () {
 		function _createPlayers(name, mark) {
-			const { addInput: makeMove } = Gameboard;
-			return { name, mark, makeMove };
+			const { addInput: makeMove, isWinner } = Gameboard;
+			return { name, mark, makeMove, isWinner };
 		}
 
 		const ppl = [];
@@ -112,20 +112,20 @@ const game = (function () {
 	})();
 
 	function init() {
-		const { isWinner, render, isDraw, getWinner } = Gameboard;
+		const { render, isDraw, getWinner } = Gameboard;
 		while (true) {
 			Players[0].makeMove(
 				prompt("Player one X-coordinate:"),
 				prompt("Player one Y-coordinate:"),
 			);
 			render();
-			if (isWinner(Players[0]) || isDraw()) break;
+			if (Players[0].isWinner() || isDraw()) break;
 			Players[1].makeMove(
 				prompt("Player two X-coordinate:"),
 				prompt("Player two Y-coordinate:"),
 			);
 			render();
-			if (isWinner(Players[1]) || isDraw()) break;
+			if (Players[1].isWinner() || isDraw()) break;
 		}
 
 		renderArts.gameOver(getWinner());
