@@ -1,11 +1,15 @@
 const game = (function () {
 	const Gameboard = (function () {
 		const _emptyCell = "*";
-		let _board = [
-			[_emptyCell, _emptyCell, _emptyCell],
-			[_emptyCell, _emptyCell, _emptyCell],
-			[_emptyCell, _emptyCell, _emptyCell],
-		];
+		const _board = [];
+
+		//Create a 3X3 board
+		for (let i = 0; i < 3; i++) {
+			_board[i] = [];
+			for (let j = 0; j < 3; j++) {
+				_board[i].push(_emptyCell);
+			}
+		}
 
 		let _winner = "";
 
