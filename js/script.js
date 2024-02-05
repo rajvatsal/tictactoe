@@ -141,5 +141,10 @@ const game = (function () {
 
 		renderArts.gameOver(getWinner());
 	}
-	return { init, playerOne: Players[0], playerTwo: Players[1] };
+	return {
+		init,
+		playerOne: Players[0],
+		playerTwo: Players[1],
+		render: Gameboard.render,
+	};
 })();
