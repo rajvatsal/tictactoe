@@ -60,15 +60,15 @@ const game = (function () {
 		return { render, addInput, isWinner, isDraw, getWinner };
 	})();
 
-	const player = (function () {
-		function _createPlayer(name, mark) {
+	const Players = (function () {
+		function _createPlayers(name, mark) {
 			const { addInput: makeMove } = Gameboard;
 			return { name, mark, makeMove };
 		}
 
 		const ppl = [];
-		ppl.push(_createPlayer("vatsal", "X"));
-		ppl.push(_createPlayer("thanos", "O"));
+		ppl.push(_createPlayers("vatsal", "X"));
+		ppl.push(_createPlayers("thanos", "O"));
 
 		return ppl;
 	})();
@@ -114,18 +114,18 @@ const game = (function () {
 	function init() {
 		const { isWinner, render, isDraw, getWinner } = Gameboard;
 		while (true) {
-			player[0].makeMove(
+			Players[0].makeMove(
 				prompt("Player one X-coordinate:"),
 				prompt("Player one Y-coordinate:"),
 			);
 			render();
-			if (isWinner(player[0]) || isDraw()) break;
-			player[1].makeMove(
+			if (isWinner(Players[0]) || isDraw()) break;
+			Players[1].makeMove(
 				prompt("Player two X-coordinate:"),
 				prompt("Player two Y-coordinate:"),
 			);
 			render();
-			if (isWinner(player[1]) || isDraw()) break;
+			if (isWinner(Players[1]) || isDraw()) break;
 		}
 
 		renderArts.gameOver(getWinner());
