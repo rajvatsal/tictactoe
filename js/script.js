@@ -84,7 +84,7 @@ const game = (function () {
 		return ppl;
 	})();
 
-	const renderArts = (function () {
+	const renderArt = (function () {
 		let _arts = {
 			header: `
  ______                ______                     ______                  
@@ -139,7 +139,7 @@ const game = (function () {
 			if (Players[1].isWinner() || isDraw()) break;
 		}
 
-		renderArts.gameOver(getWinner());
+		renderArt.gameOver(getWinner());
 	}
 	return {
 		init,
