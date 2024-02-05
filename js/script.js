@@ -29,7 +29,7 @@ const game = (function () {
 		function isDraw() {
 			for (let i of _board) {
 				for (let j of i) {
-					if (j === "*") return false;
+					if (j === _emptyCell) return false;
 				}
 			}
 			return true;
