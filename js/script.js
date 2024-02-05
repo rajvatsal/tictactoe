@@ -43,18 +43,18 @@ const game = (function () {
 
 		function isWinner() {
 			let diagR = 0;
-			for (let i = 0; i < _board.length; i++) {
+			for (let i = 0; i < _rows; i++) {
 				let vert = 0,
 					horz = 0,
 					diagL = 0;
 
-				for (let j = 0; j < _board.length; j++) {
+				for (let j = 0; j < _columns; j++) {
 					if (_board[i][j] === this.mark) horz++;
 					if (_board[j][i] === this.mark) vert++;
 					if (_board[j][j] === this.mark) diagL++;
 				}
 
-				if (_board[i][_board[i].length - 1 - i] === this.mark) diagR++;
+				if (_board[i][_columns - 1 - i] === this.mark) diagR++;
 				if (
 					diagR === _rows ||
 					vert === _columns ||
