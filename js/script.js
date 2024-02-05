@@ -17,9 +17,9 @@ const gameBoard = (function () {
 	}
 
 	function addInput(x, y) {
-		if (!x || !y || _board[x][y] !== "*") {
+		if (x > 2 || y > 2 || _board[x][y] !== "*") {
 			[x, y] = prompt(
-				"This cell is filled. Enter your x and y value again with a space.",
+				"Invalid Input. Enter your x and y value again with a space.",
 			).split(" ");
 		}
 		_board[x][y] = this.mark;
