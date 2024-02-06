@@ -23,13 +23,14 @@ const game = (function () {
 			}
 		}
 
-		function placeMark(x, y) {
+		function placeMark(plyr, [x, y]) {
 			if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell) {
 				[x, y] = prompt(
 					"Invalid Input. Enter your x and y value again with a space.",
 				).split(" ");
 			}
-			_board[x][y] = this.mark;
+			if (!plyr.validPlayer) return;
+			_board[x][y] = plyr.mark;
 		}
 
 		function isDraw() {
@@ -71,17 +72,13 @@ const game = (function () {
 		return { render, placeMark, isWinner, isDraw, getWinner };
 	})();
 
-	const Players = (function () {
-		function _createPlayers(name, mark) {
-			const { placeMark, isWinner } = Gameboard;
-			return { name, mark, placeMark, isWinner };
+	const Player = (function () {
+		function create(values) {
+			const instance = Object.create(this);
+			return Object.assign(instance, values);
 		}
 
-		const ppl = [];
-		ppl.push(_createPlayers("vatsal", "X"));
-		ppl.push(_createPlayers("thanos", "O"));
-
-		return ppl;
+		return { create };
 	})();
 
 	const renderArt = (function () {
@@ -123,28 +120,34 @@ const game = (function () {
 	})();
 
 	function init() {
-		const { render, isDraw, getWinner } = Gameboard;
-		while (true) {
-			Players[0].placeMark(
+		const { render, isDraw, getWinner, placeMark, isWinner } = Gameboard;
+
+		const players = [
+			Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
+			Player.create({ name: "thanos", mark: "O", validPlayer: true }),
+		];
+
+		function getCoord() {
+			return [
 				prompt("Player one X-coordinate:"),
 				prompt("Player one Y-coordinate:"),
-			);
+			];
+		}
+
+		while (true) {
+			placeMark(players[0], getCoord());
 			render();
-			if (Players[0].isWinner() || isDraw()) break;
-			Players[1].placeMark(
-				prompt("Player two X-coordinate:"),
-				prompt("Player two Y-coordinate:"),
-			);
+			if (isWinner.call(players[0]) || isDraw()) break;
+			placeMark(players[1], getCoord());
 			render();
-			if (Players[1].isWinner() || isDraw()) break;
+			if (isWinner.call(players[1]) || isDraw()) break;
 		}
 
 		renderArt.gameOver(getWinner());
 	}
+
 	return {
 		init,
-		playerOne: Players[0],
-		playerTwo: Players[1],
 		render: Gameboard.render,
 	};
 })();
