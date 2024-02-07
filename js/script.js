@@ -90,14 +90,18 @@ const GameController = (function () {
 		}
 	}
 
-	function isDraw() {
-		for (let row of getBoard()) {
-			return !row.includes(_emptyCell);
-		}
-	}
-
-	function isWinner() {
+	function checkGameStatus() {
 		const _board = getBoard();
+
+		// Draw Condition
+		let draw = false;
+		for (let row of _board) {
+			if (row.includes(_emptyCell)) break;
+			else draw = true;
+		}
+		if (draw) return true;
+
+		// Win condition
 		let diagR = 0;
 		for (let i = 0; i < _rows; i++) {
 			let vert = 0,
@@ -132,8 +136,7 @@ const GameController = (function () {
 	function playRound(x, y) {
 		placeMark(activePlayer, x, y);
 		render();
-		if (isWinner() || isDraw()) renderArt.gameOver(_winner);
-		switchPlayer();
+		checkGameStatus() ? renderArt.gameOver(_winner) : switchPlayer();
 	}
 
 	return { playRound };
