@@ -82,7 +82,7 @@ const GameController = (function () {
 		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
 	];
 
-	let activePlayer = players[0];
+	let _activePlayer = players[0];
 	let _winner = "";
 
 	function render() {
@@ -110,19 +110,19 @@ const GameController = (function () {
 				diagL = 0;
 
 			for (let j = 0; j < _columns; j++) {
-				if (_board[i][j] === activePlayer.mark) horz++;
-				if (_board[j][i] === activePlayer.mark) vert++;
-				if (_board[j][j] === activePlayer.mark) diagL++;
+				if (_board[i][j] === _activePlayer.mark) horz++;
+				if (_board[j][i] === _activePlayer.mark) vert++;
+				if (_board[j][j] === _activePlayer.mark) diagL++;
 			}
 
-			if (_board[i][_columns - 1 - i] === activePlayer.mark) diagR++;
+			if (_board[i][_columns - 1 - i] === _activePlayer.mark) diagR++;
 			if (
 				diagR === _rows ||
 				vert === _columns ||
 				horz === _rows ||
 				diagL === _rows
 			) {
-				_winner = activePlayer.name;
+				_winner = _activePlayer.name;
 				return true;
 			}
 		}
@@ -130,12 +130,12 @@ const GameController = (function () {
 	}
 
 	const switchPlayer = () =>
-		activePlayer === players[0]
-			? (activePlayer = players[1])
-			: (activePlayer = players[0]);
+		_activePlayer === players[0]
+			? (_activePlayer = players[1])
+			: (_activePlayer = players[0]);
 
 	function playRound(x, y) {
-		placeMark(activePlayer, x, y);
+		placeMark(_activePlayer, x, y);
 		render();
 		checkGameStatus() ? renderArt.gameOver(_winner) : switchPlayer();
 	}
