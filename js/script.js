@@ -97,10 +97,12 @@ const GameController = (function () {
 		// Draw Condition
 		let draw = false;
 		for (let row of _board) {
-			if (row.includes(_emptyCell)) break;
-			else draw = true;
+			if (row.includes(_emptyCell)) {
+				draw = false;
+				break;
+			} else draw = true;
 		}
-		if (draw) return true;
+		if (draw) return draw;
 
 		// Win condition
 		let diagR = 0;
