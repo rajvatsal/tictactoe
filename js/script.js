@@ -25,6 +25,7 @@ const Gameboard = (function () {
 	return { placeMark, getBoardDetails, getBoard };
 })();
 
+// Factory function (instantiation module) that uses prototypal inheritence
 const Player = (function () {
 	function create(values) {
 		const instance = Object.create(this);
