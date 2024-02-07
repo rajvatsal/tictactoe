@@ -13,7 +13,9 @@ const Gameboard = (function () {
 	}
 
 	const getBoard = () => _board;
-	const getBoardDetails = () => [_rows, _columns, _emptyCell];
+	const getBoardDetails = () => {
+		return { _rows, _columns, _emptyCell };
+	};
 
 	function placeMark(plyr, x, y) {
 		if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell)
@@ -75,7 +77,7 @@ const renderArt = (function () {
 
 const GameController = (function () {
 	const { getBoardDetails, placeMark, getBoard } = Gameboard;
-	const [_rows, _columns, _emptyCell] = getBoardDetails();
+	const { _rows, _columns, _emptyCell } = getBoardDetails();
 
 	const players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
