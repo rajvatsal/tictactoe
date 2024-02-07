@@ -12,63 +12,17 @@ const Gameboard = (function () {
 		}
 	}
 
-	let _winner = "";
-
-	const getWinner = () => _winner;
-
-	function render() {
-		for (let i of _board) {
-			console.log(i.join(" "));
-		}
-	}
+	const getBoard = () => _board;
+	const getBoardDetails = () => [_rows, _columns, _emptyCell];
 
 	function placeMark(plyr, x, y) {
-		if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell) {
-			[x, y] = prompt(
-				"Invalid Input. Enter your x and y value again with a space.",
-			).split(" ");
-		}
+		if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell)
+			return;
 		if (!plyr.validPlayer) return;
 		_board[x][y] = plyr.mark;
 	}
 
-	function isDraw() {
-		for (let i of _board) {
-			for (let j of i) {
-				if (j === _emptyCell) return false;
-			}
-		}
-		return true;
-	}
-
-	function isWinner() {
-		let diagR = 0;
-		for (let i = 0; i < _rows; i++) {
-			let vert = 0,
-				horz = 0,
-				diagL = 0;
-
-			for (let j = 0; j < _columns; j++) {
-				if (_board[i][j] === this.mark) horz++;
-				if (_board[j][i] === this.mark) vert++;
-				if (_board[j][j] === this.mark) diagL++;
-			}
-
-			if (_board[i][_columns - 1 - i] === this.mark) diagR++;
-			if (
-				diagR === _rows ||
-				vert === _columns ||
-				horz === _rows ||
-				diagL === _rows
-			) {
-				_winner = this.name;
-				return true;
-			}
-		}
-		return false;
-	}
-
-	return { render, placeMark, isWinner, isDraw, getWinner };
+	return { placeMark, getBoardDetails, getBoard };
 })();
 
 const Player = (function () {
@@ -119,13 +73,56 @@ const renderArt = (function () {
 })();
 
 const GameController = (function () {
-	const { render, isDraw, getWinner, placeMark, isWinner } = Gameboard;
+	const { getBoardDetails, placeMark, getBoard } = Gameboard;
+	const [_rows, _columns, _emptyCell] = getBoardDetails();
 
 	const players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
 		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
 	];
+
 	let activePlayer = players[0];
+	let _winner = "";
+
+	function render() {
+		for (let row of getBoard()) {
+			console.log(row.join(" "));
+		}
+	}
+
+	function isDraw() {
+		for (let row of getBoard()) {
+			return !row.includes(_emptyCell);
+		}
+	}
+
+	function isWinner() {
+		const _board = getBoard();
+		let diagR = 0;
+		for (let i = 0; i < _rows; i++) {
+			let vert = 0,
+				horz = 0,
+				diagL = 0;
+
+			for (let j = 0; j < _columns; j++) {
+				if (_board[i][j] === activePlayer.mark) horz++;
+				if (_board[j][i] === activePlayer.mark) vert++;
+				if (_board[j][j] === activePlayer.mark) diagL++;
+			}
+
+			if (_board[i][_columns - 1 - i] === activePlayer.mark) diagR++;
+			if (
+				diagR === _rows ||
+				vert === _columns ||
+				horz === _rows ||
+				diagL === _rows
+			) {
+				_winner = activePlayer.name;
+				return true;
+			}
+		}
+		return false;
+	}
 
 	const switchPlayer = () =>
 		activePlayer === players[0]
@@ -135,7 +132,7 @@ const GameController = (function () {
 	function playRound(x, y) {
 		placeMark(activePlayer, x, y);
 		render();
-		if (isWinner.call(activePlayer) || isDraw()) renderArt.gameOver(getWinner);
+		if (isWinner() || isDraw()) renderArt.gameOver(_winner);
 		switchPlayer();
 	}
 
