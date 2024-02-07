@@ -79,32 +79,32 @@ const GameController = (function () {
 	const { getBoardDetails, placeMark, getBoard } = Gameboard;
 	const { _rows, _columns, _emptyCell } = getBoardDetails();
 
-	const players = [
+	const _players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
 		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
 	];
 
-	let _activePlayer = players[0];
+	let _activePlayer = _players[0];
 	let _winner = "";
 
-	function render() {
+	function _render() {
 		for (let row of getBoard()) {
 			console.log(row.join(" "));
 		}
 	}
 
-	function checkGameStatus() {
+	function _checkGameStatus() {
 		const _board = getBoard();
 
 		// Draw Condition
-		let draw = false;
+		let _draw = false;
 		for (let row of _board) {
 			if (row.includes(_emptyCell)) {
-				draw = false;
+				_draw = false;
 				break;
-			} else draw = true;
+			} else _draw = true;
 		}
-		if (draw) return draw;
+		if (_draw) return _draw;
 
 		// Win condition
 		let diagR = 0;
@@ -133,15 +133,15 @@ const GameController = (function () {
 		return false;
 	}
 
-	const switchPlayer = () =>
-		_activePlayer === players[0]
-			? (_activePlayer = players[1])
-			: (_activePlayer = players[0]);
+	const _switchPlayer = () =>
+		_activePlayer === _players[0]
+			? (_activePlayer = _players[1])
+			: (_activePlayer = _players[0]);
 
 	function playRound(x, y) {
 		placeMark(_activePlayer, x, y);
-		render();
-		checkGameStatus() ? renderArt.gameOver(_winner) : switchPlayer();
+		_render();
+		_checkGameStatus() ? renderArt.gameOver(_winner) : _switchPlayer();
 	}
 
 	return { playRound };
