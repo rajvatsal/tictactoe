@@ -13,7 +13,7 @@ const Gameboard = (function () {
 	}
 
 	const getBoard = () => _board;
-	const getBoardDetails = () => {
+	const getBoardSpec = () => {
 		return { _rows, _columns, _emptyCell };
 	};
 
@@ -24,7 +24,7 @@ const Gameboard = (function () {
 		_board[x][y] = plyr.mark;
 	}
 
-	return { placeMark, getBoardDetails, getBoard };
+	return { placeMark, getBoardSpec, getBoard };
 })();
 
 // Factory function (instantiation module) that uses prototypal inheritence
@@ -76,8 +76,8 @@ const renderArt = (function () {
 })();
 
 const GameController = (function () {
-	const { getBoardDetails, placeMark, getBoard } = Gameboard;
-	const { _rows, _columns, _emptyCell } = getBoardDetails();
+	const { getBoardSpec, placeMark, getBoard } = Gameboard;
+	const { _rows, _columns, _emptyCell } = getBoardSpec();
 
 	const _players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
