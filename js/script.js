@@ -121,11 +121,13 @@ const GameController = (function () {
 
 		// Draw Condition
 		let _draw = false;
-		for (let row of _board) {
-			if (row.includes(_emptyCell)) {
-				_draw = false;
-				break;
-			} else _draw = true;
+		for (let i = 0; i < _rows; i++) {
+			for (let j = 0; j < _columns; j++) {
+				if (_board[i][j] === _emptyCell) {
+					_draw = false;
+					break;
+				} else _draw = true;
+			}
 		}
 		if (_draw) return _draw;
 
