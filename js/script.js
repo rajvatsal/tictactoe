@@ -17,6 +17,14 @@ const Gameboard = (function () {
 		return { _rows, _columns, _emptyCell };
 	};
 
+	function resetBoard() {
+		for (let i = 0; i < _rows; i++) {
+			for (let j = 0; j < _columns; j++) {
+				_board[i][j] = _emptyCell;
+			}
+		}
+	}
+
 	function placeMark(plyr, x, y) {
 		if (x > _columns - 1 || y > _rows - 1 || _board[x][y] !== _emptyCell)
 			return;
@@ -24,7 +32,7 @@ const Gameboard = (function () {
 		_board[x][y] = plyr.mark;
 	}
 
-	return { placeMark, getBoardSpec, getBoard };
+	return { placeMark, getBoardSpec, getBoard, resetBoard };
 })();
 
 // Factory function (instantiation module) that uses prototypal inheritence
@@ -66,19 +74,28 @@ const renderArt = (function () {
    \\ \\____/\\ \\_\\\\ \\__/.\\_\\\\ \\___x___/\'
     \\/___/  \\/_/ \\/__/\\/_/ \\/__//__/  
 `,
+		scores: `
+  ____    ___    ___   _ __    __    ____  
+ /\',__\\  /\'___\\ / __\`\\/\\\`\'__\\/\'__\`\\ /\',__\\ 
+/\\__, \`\\/\\ \\__//\\ \\L\\ \\ \\ \\//\\  __//\\__, \`\\
+\\/\\____/\\ \\____\\ \\____/\\ \\_\\\\ \\____\\/\\____/
+ \\/___/  \\/____/\\/___/  \\/_/ \\/____/\\/___/ 
+`,
 	};
 	console.log(_arts.header);
 
 	const gameOver = (val) => {
 		if (val) console.log(_arts.winner, val);
 		else console.log(_arts.draw);
+		console.log("\n\n\n\n");
+		console.log(_arts.scores);
 	};
 
 	return { gameOver };
 })();
 
 const GameController = (function () {
-	const { getBoardSpec, placeMark, getBoard } = Gameboard;
+	const { getBoardSpec, placeMark, getBoard, resetBoard } = Gameboard;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 
 	const _players = [
@@ -88,6 +105,10 @@ const GameController = (function () {
 
 	let _activePlayer = _players[0];
 	let _winner = "";
+	const _scores = {
+		[_players[0].name]: 0,
+		[_players[1].name]: 0,
+	};
 
 	function _render() {
 		for (let row of getBoard()) {
@@ -140,10 +161,18 @@ const GameController = (function () {
 			? (_activePlayer = _players[1])
 			: (_activePlayer = _players[0]);
 
+	function _gameOver() {
+		_scores[_activePlayer.name]++;
+		renderArt.gameOver(_winner);
+		console.table(_scores);
+		resetBoard();
+		_winner = "";
+	}
+
 	function playRound(x, y) {
 		placeMark(_activePlayer, x, y);
 		_render();
-		_checkGameStatus() ? renderArt.gameOver(_winner) : _switchPlayer();
+		_checkGameStatus() ? _gameOver() : _switchPlayer();
 	}
 
 	return { playRound };
