@@ -179,3 +179,14 @@ const GameController = (function () {
 
 	return { playRound };
 })();
+
+const ScreenController = (function () {
+	const { getBoardSpec } = Gameboard;
+	const { _rows, _columns } = getBoardSpec();
+	const boardContainer = document.querySelector("#board-container");
+
+	//Create board
+	for (let i = 0; i < _rows * _columns; i++) {
+		boardContainer.appendChild(document.createElement("button"));
+	}
+})();

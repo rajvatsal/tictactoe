@@ -1,8 +1,38 @@
 :root {
+  --board-width: 400px;
+  --board-height: 400px;
+}
+
+header > h1 {
+  color: steelblue;
+  text-align: center;
+}
+
+body {
   height: 100vh;
 }
 
-header>h1 {
-  color: steelblue;
-  text-align: center;
+main {
+  display: grid;
+  place-items: center;
+}
+
+#board-container {
+  background-color: #ea2027;
+  background-image: linear-gradient(315deg, #ea2027 0%, #ee5a24 74%);
+  width: var(--board-width);
+  height: var(--board-height);
+  display: grid;
+  grid-template: 1fr 1fr 1fr / 1fr 1fr 1fr;
+  gap: 2px;
+}
+
+#board-container > button {
+  border: 0;
+  background-color: white;
+  border-radius: 10px;
+}
+
+#board-container > button:not(.filled) {
+  cursor: pointer;
 }
