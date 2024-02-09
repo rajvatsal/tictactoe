@@ -120,16 +120,16 @@ const GameController = (function () {
 		const _board = getBoard();
 
 		// Draw Condition
-		let _draw = false;
-		for (let i = 0; i < _rows; i++) {
+		let _draw = true;
+		outerLoop: for (let i = 0; i < _rows; i++) {
 			for (let j = 0; j < _columns; j++) {
 				if (_board[i][j] === _emptyCell) {
 					_draw = false;
-					break;
-				} else _draw = true;
+					break outerLoop;
+				}
 			}
 		}
-		if (_draw) return _draw;
+		if (_draw) return true;
 
 		// Win condition
 		let diagR = 0;
