@@ -214,7 +214,6 @@ const ScreenController = (function () {
 		if (e.target.classList.contains("filled")) return;
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		playRound(x, y);
-		e.target.classList.add("filled");
 		updateScreen();
 	});
 })();
