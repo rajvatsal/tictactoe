@@ -165,19 +165,19 @@ const GameController = (function () {
 			? (_activePlayer = _players[1])
 			: (_activePlayer = _players[0]);
 
-	function _gameOver() {
+	function _gameOver(outcome) {
 		_scores[_activePlayer.name]++;
+		outcome === 2 ? renderArt.gameOver(false) : renderArt.gameOver(true);
 		renderArt.gameOver(_winner);
 		console.table(_scores);
 		resetBoard();
-		_winner = "";
 	}
 
 	function playRound(x, y) {
 		placeMark(_activePlayer, x, y);
 		_render();
 		const result = _checkGameStatus();
-		result ? _gameOver() : _switchPlayer();
+		result ? _gameOver(result) : _switchPlayer();
 		return result;
 	}
 
@@ -186,7 +186,7 @@ const GameController = (function () {
 
 const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
-	const { playRound, getActivePlayer } = GameController;
+	const { playRound, getActivePlayer, getWinner } = GameController;
 	const { _rows, _columns } = getBoardSpec();
 	const boardContainer = document.querySelector("#board-container");
 
@@ -217,5 +217,7 @@ const ScreenController = (function () {
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		const gameEnded = playRound(x, y);
 		gameEnded ? clearScreen() : (e.target.textContent = getBoard()[x][y]);
+		if (gameEnded === 1) alert(getWinner());
+		else if (gameEnded === 2) alert("DRAW");
 	});
 })();
