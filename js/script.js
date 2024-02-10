@@ -131,7 +131,7 @@ const GameController = (function () {
 				}
 			}
 		}
-		if (_draw) return true;
+		if (_draw) return 2;
 
 		// Win condition
 		let diagR = 0;
@@ -154,10 +154,10 @@ const GameController = (function () {
 				diagL === _rows
 			) {
 				_winner = _activePlayer.name;
-				return true;
+				return 1;
 			}
 		}
-		return false;
+		return 0;
 	}
 
 	const _switchPlayer = () =>
@@ -176,7 +176,9 @@ const GameController = (function () {
 	function playRound(x, y) {
 		placeMark(_activePlayer, x, y);
 		_render();
-		_checkGameStatus() ? _gameOver() : _switchPlayer();
+		const result = _checkGameStatus();
+		result ? _gameOver() : _switchPlayer();
+		return result;
 	}
 
 	return { playRound, getActivePlayer, getScores, getWinner };
@@ -199,7 +201,7 @@ const ScreenController = (function () {
 
 	const btns = boardContainer.querySelectorAll("button");
 
-	const updateScreen = () => {
+	const clearScreen = () => {
 		const board = getBoard();
 		let btnCount = 0;
 		for (let i = 0; i < _rows; i++) {
@@ -213,7 +215,7 @@ const ScreenController = (function () {
 		if (e.target.tagName !== "BUTTON") return;
 		if (e.target.classList.contains("filled")) return;
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
-		playRound(x, y);
-		updateScreen();
+		const gameEnded = playRound(x, y);
+		gameEnded ? clearScreen() : (e.target.textContent = getBoard()[x][y]);
 	});
 })();
