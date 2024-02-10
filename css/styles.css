@@ -23,7 +23,7 @@ body {
   border: 0;
   background-color: black;
   color: white;
-  font-size: 2rem;
+  font-size: 6.8rem;
 }
 
 #board-container > button:not(.filled) {
