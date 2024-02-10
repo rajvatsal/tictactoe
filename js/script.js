@@ -1,5 +1,5 @@
 const Gameboard = (function () {
-	const _emptyCell = "*";
+	const _emptyCell = "";
 	const _rows = 3;
 	const _columns = 3;
 	const _board = [];
@@ -110,10 +110,12 @@ const GameController = (function () {
 		[_players[1].name]: 0,
 	};
 
+	const getActivePlayer = () => _activePlayer;
+	const getScores = () => _scores;
+	const getWinner = () => _winner;
+
 	function _render() {
-		for (let row of getBoard()) {
-			console.log(row.join(" "));
-		}
+		console.table(getBoard());
 	}
 
 	function _checkGameStatus() {
@@ -177,16 +179,36 @@ const GameController = (function () {
 		_checkGameStatus() ? _gameOver() : _switchPlayer();
 	}
 
-	return { playRound };
+	return { playRound, getActivePlayer, getScores, getWinner };
 })();
 
 const ScreenController = (function () {
-	const { getBoardSpec } = Gameboard;
+	const { getBoardSpec, getBoard } = Gameboard;
+	const { playRound, getActivePlayer } = GameController;
 	const { _rows, _columns } = getBoardSpec();
 	const boardContainer = document.querySelector("#board-container");
 
 	//Create board
 	for (let i = 0; i < _rows * _columns; i++) {
-		boardContainer.appendChild(document.createElement("button"));
+		const btn = document.createElement("button");
+		boardContainer.appendChild(btn);
 	}
+
+	const _btns = boardContainer.querySelectorAll("button");
+
+	const updateScreen = () => {
+		const board = getBoard();
+		let btnPos = 0;
+		for (let i = 0; i < _rows; i++) {
+			for (let j = 0; j < _columns; j++) {
+				_btns[btnPos++].textContent = board[i][j];
+			}
+		}
+	};
+
+	boardContainer.addEventListener("click", (e) => {
+		if (e.target.tagName !== "BUTTON") return;
+		if (e.target.classList.contains("filled")) return;
+		updateScreen();
+	});
 })();
