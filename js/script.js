@@ -189,19 +189,22 @@ const ScreenController = (function () {
 	const boardContainer = document.querySelector("#board-container");
 
 	//Create board
-	for (let i = 0; i < _rows * _columns; i++) {
-		const btn = document.createElement("button");
-		boardContainer.appendChild(btn);
+	for (let i = 0; i < _rows; i++) {
+		for (let j = 0; j < _columns; j++) {
+			const btn = document.createElement("button");
+			btn.setAttribute("data-pos", `${i}-${j}`);
+			boardContainer.appendChild(btn);
+		}
 	}
 
-	const _btns = boardContainer.querySelectorAll("button");
+	const btns = boardContainer.querySelectorAll("button");
 
 	const updateScreen = () => {
 		const board = getBoard();
-		let btnPos = 0;
+		let btnCount = 0;
 		for (let i = 0; i < _rows; i++) {
 			for (let j = 0; j < _columns; j++) {
-				_btns[btnPos++].textContent = board[i][j];
+				btns[btnCount++].textContent = board[i][j];
 			}
 		}
 	};
@@ -209,6 +212,9 @@ const ScreenController = (function () {
 	boardContainer.addEventListener("click", (e) => {
 		if (e.target.tagName !== "BUTTON") return;
 		if (e.target.classList.contains("filled")) return;
+		const [x, y] = e.target.getAttribute("data-pos").split("-");
+		playRound(x, y);
+		e.target.classList.add("filled");
 		updateScreen();
 	});
 })();
