@@ -187,8 +187,17 @@ const GameController = (function () {
 const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
 	const { playRound, getActivePlayer, getWinner } = GameController;
-	const { _rows, _columns } = getBoardSpec();
+	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const boardContainer = document.querySelector("#board-container");
+	const _gameState = {
+		active: true,
+		ended: false,
+	};
+
+	const _changeGameState = (state) => {
+		_gameState.active = state === "active";
+		_gameState.ended = state === "ended";
+	};
 
 	//Create board
 	for (let i = 0; i < _rows; i++) {
@@ -211,13 +220,27 @@ const ScreenController = (function () {
 		}
 	};
 
-	boardContainer.addEventListener("click", (e) => {
+	const updateScreen = (e) => {
+		e.target.textContent = getActivePlayer().mark;
+	};
+
+	const clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "BUTTON") return;
-		if (e.target.classList.contains("filled")) return;
+		if (_gameState.ended) {
+			clearScreen();
+			_changeGameState("active");
+			return;
+		}
+		if (e.target.textContent !== _emptyCell) return;
+
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
-		const gameEnded = playRound(x, y);
-		gameEnded ? clearScreen() : (e.target.textContent = getBoard()[x][y]);
-		if (gameEnded === 1) alert(getWinner());
-		else if (gameEnded === 2) alert("DRAW");
-	});
+		updateScreen(e);
+		const result = playRound(x, y);
+		if (result) {
+			result === 1 ? alert("Winner: " + getWinner()) : alert("DRAW");
+			_changeGameState("ended");
+		}
+	};
+
+	boardContainer.addEventListener("click", clickHandlerBoard);
 })();
