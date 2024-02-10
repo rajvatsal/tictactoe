@@ -188,7 +188,7 @@ const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
 	const { playRound, getActivePlayer, getWinner } = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
-	const boardContainer = document.querySelector("#board-container");
+	const _boardContainer = document.querySelector("#board-container");
 	const _gameState = {
 		active: true,
 		ended: false,
@@ -204,37 +204,37 @@ const ScreenController = (function () {
 		for (let j = 0; j < _columns; j++) {
 			const btn = document.createElement("button");
 			btn.setAttribute("data-pos", `${i}-${j}`);
-			boardContainer.appendChild(btn);
+			_boardContainer.appendChild(btn);
 		}
 	}
 
-	const btns = boardContainer.querySelectorAll("button");
+	const _btns = _boardContainer.querySelectorAll("button");
 
-	const clearScreen = () => {
+	const _clearScreen = () => {
 		const board = getBoard();
 		let btnCount = 0;
 		for (let i = 0; i < _rows; i++) {
 			for (let j = 0; j < _columns; j++) {
-				btns[btnCount++].textContent = board[i][j];
+				_btns[btnCount++].textContent = board[i][j];
 			}
 		}
 	};
 
-	const updateScreen = (e) => {
+	const _updateScreen = (e) => {
 		e.target.textContent = getActivePlayer().mark;
 	};
 
-	const clickHandlerBoard = (e) => {
+	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "BUTTON") return;
 		if (_gameState.ended) {
-			clearScreen();
+			_clearScreen();
 			_changeGameState("active");
 			return;
 		}
 		if (e.target.textContent !== _emptyCell) return;
 
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
-		updateScreen(e);
+		_updateScreen(e);
 		const result = playRound(x, y);
 		if (result) {
 			result === 1 ? alert("Winner: " + getWinner()) : alert("DRAW");
@@ -242,5 +242,5 @@ const ScreenController = (function () {
 		}
 	};
 
-	boardContainer.addEventListener("click", clickHandlerBoard);
+	_boardContainer.addEventListener("click", _clickHandlerBoard);
 })();
