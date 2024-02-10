@@ -121,18 +121,6 @@ const GameController = (function () {
 	function _checkGameStatus() {
 		const _board = getBoard();
 
-		// Draw Condition
-		let _draw = true;
-		outerLoop: for (let i = 0; i < _rows; i++) {
-			for (let j = 0; j < _columns; j++) {
-				if (_board[i][j] === _emptyCell) {
-					_draw = false;
-					break outerLoop;
-				}
-			}
-		}
-		if (_draw) return 2;
-
 		// Win condition
 		let diagR = 0;
 		for (let i = 0; i < _rows; i++) {
@@ -156,6 +144,18 @@ const GameController = (function () {
 				_winner = _activePlayer.name;
 				return 1;
 			}
+
+			// Draw Condition
+			let _draw = true;
+			outerLoop: for (let i = 0; i < _rows; i++) {
+				for (let j = 0; j < _columns; j++) {
+					if (_board[i][j] === _emptyCell) {
+						_draw = false;
+						break outerLoop;
+					}
+				}
+			}
+			if (_draw) return 2;
 		}
 		return 0;
 	}
