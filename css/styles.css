@@ -1,6 +1,9 @@
 /* @import url("css-reset-from-josh.css"); */
 
+@import url("https://fonts.googleapis.com/css2?family=Protest+Revolution&display=swap");
+
 :root {
+  font-family: "Protest Revolution", sans-serif;
   --board-width: 400px;
   --ui-width: min(80vw, var(--board-width));
 }
@@ -40,7 +43,8 @@ footer {
   border: 0;
   background-color: black;
   color: white;
-  font-size: 6.8rem;
+  font-size: 6.6rem;
+  font-family: inherit;
 }
 
 #board-container > button:not(.filled) {
