@@ -108,11 +108,11 @@ const GameController = (function () {
 	const _scores = {
 		[_players[0].name]: 0,
 		[_players[1].name]: 0,
+		tie: 0,
 	};
 
 	const getActivePlayer = () => _activePlayer;
 	const getScores = () => _scores;
-	const getWinner = () => _winner;
 
 	function _render() {
 		console.table(getBoard());
@@ -144,19 +144,18 @@ const GameController = (function () {
 				_winner = _activePlayer.name;
 				return 1;
 			}
-
-			// Draw Condition
-			let _draw = true;
-			outerLoop: for (let i = 0; i < _rows; i++) {
-				for (let j = 0; j < _columns; j++) {
-					if (_board[i][j] === _emptyCell) {
-						_draw = false;
-						break outerLoop;
-					}
+		}
+		// Draw Condition
+		let _draw = true;
+		outerLoop: for (let i = 0; i < _rows; i++) {
+			for (let j = 0; j < _columns; j++) {
+				if (_board[i][j] === _emptyCell) {
+					_draw = false;
+					break outerLoop;
 				}
 			}
-			if (_draw) return 2;
 		}
+		if (_draw) return 2;
 		return 0;
 	}
 
@@ -166,7 +165,7 @@ const GameController = (function () {
 			: (_activePlayer = _players[0]);
 
 	function _gameOver(outcome) {
-		_scores[_activePlayer.name]++;
+		outcome === 1 ? _scores[_winner]++ : _scores["tie"]++;
 		outcome === 2 ? renderArt.gameOver(false) : renderArt.gameOver(true);
 		renderArt.gameOver(_winner);
 		console.table(_scores);
@@ -181,14 +180,17 @@ const GameController = (function () {
 		return result;
 	}
 
-	return { playRound, getActivePlayer, getScores, getWinner };
+	return { playRound, getActivePlayer, getScores };
 })();
 
 const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
-	const { playRound, getActivePlayer, getWinner } = GameController;
+	const { playRound, getActivePlayer, getScores } = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const _boardContainer = document.querySelector("#board-container");
+	const _scoreBoard = document.querySelectorAll(
+		"#score-board > :not(#mode) > span:nth-child(2)",
+	);
 	const _gameState = {
 		active: true,
 		ended: false,
@@ -211,17 +213,21 @@ const ScreenController = (function () {
 	const _btns = _boardContainer.querySelectorAll("button");
 
 	const _clearScreen = () => {
-		const board = getBoard();
-		let btnCount = 0;
-		for (let i = 0; i < _rows; i++) {
-			for (let j = 0; j < _columns; j++) {
-				_btns[btnCount++].textContent = board[i][j];
-			}
+		const count = _rows * _columns;
+		for (let i = 0; i < count; i++) {
+			_btns[i].textContent = "";
 		}
 	};
 
 	const _updateScreen = (e) => {
 		e.target.textContent = getActivePlayer().mark;
+	};
+
+	const _updateScores = () => {
+		const scores = getScores();
+		_scoreBoard[0].textContent = scores.vatsal;
+		_scoreBoard[1].textContent = scores.tie;
+		_scoreBoard[2].textContent = scores.thanos;
 	};
 
 	const _clickHandlerBoard = (e) => {
@@ -236,9 +242,11 @@ const ScreenController = (function () {
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		_updateScreen(e);
 		const result = playRound(x, y);
+
+		//If game has ended
 		if (result) {
-			result === 1 ? alert("Winner: " + getWinner()) : alert("DRAW");
 			_changeGameState("ended");
+			_updateScores();
 		}
 	};
 
