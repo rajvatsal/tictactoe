@@ -187,15 +187,37 @@ const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
 	const { playRound, getActivePlayer, getScores } = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
+
 	const _boardContainer = document.querySelector("#board-container");
 	const _scoreBoard = document.querySelectorAll(
 		"#score-board > :not(#mode) > span:nth-child(2)",
 	);
+
 	const _animationDelay = 150;
 	const _animationCount = 9;
 	const _gameState = {
 		active: true,
 		ended: false,
+	};
+
+	const _soundEffects = {
+		placeMark: new Audio("sound-effects/place-mark.mp3"),
+		draw: new Audio("sound-effects/game-start.mp3"),
+		playSound: function (sound) {
+			this[sound].currentTime = 0;
+			this[sound].play();
+		},
+	};
+	const _animationEffects = {
+		blinkBoard: function (count) {
+			if (count < 0 && _boardContainer.style.backgroundColor === "white")
+				return;
+			_boardContainer.style.backgroundColor =
+				_boardContainer.style.backgroundColor === "white"
+					? "transparent"
+					: "white";
+			setTimeout(this.blinkBoard.bind(this), _animationDelay, --count);
+		},
 	};
 
 	const _changeGameState = (state) => {
@@ -229,19 +251,10 @@ const ScreenController = (function () {
 		_scoreBoard[2].textContent = scores.thanos;
 	};
 
-	const _blinkBoard = (count) => {
-		if (!count) return;
-		_boardContainer.style.backgroundColor =
-			_boardContainer.style.backgroundColor === "white"
-				? "rgba(255, 255, 255, 0.5)"
-				: "white";
-		setTimeout(_blinkBoard, _animationDelay, --count);
-	};
-
 	const _triggerDrawActions = () => {
-		//Animation
-		_btns.forEach((btn) => (btn.style.color = "rgba(255, 255, 255, 0.6)"));
-		_blinkBoard(_animationCount);
+		_btns.forEach((btn) => (btn.style.color = "rgba(255, 255, 255, 0.4)"));
+		_animationEffects.blinkBoard(_animationCount);
+		_soundEffects.playSound("draw");
 	};
 
 	const _clickHandlerBoard = (e) => {
@@ -254,6 +267,7 @@ const ScreenController = (function () {
 		}
 		if (e.target.textContent !== _emptyCell) return;
 
+		_soundEffects.playSound("placeMark");
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		_updateScreen(e);
 		const result = playRound(x, y);
