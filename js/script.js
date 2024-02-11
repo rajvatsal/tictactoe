@@ -191,6 +191,8 @@ const ScreenController = (function () {
 	const _scoreBoard = document.querySelectorAll(
 		"#score-board > :not(#mode) > span:nth-child(2)",
 	);
+	const _animationDelay = 150;
+	const _animationCount = 9;
 	const _gameState = {
 		active: true,
 		ended: false,
@@ -213,10 +215,7 @@ const ScreenController = (function () {
 	const _btns = _boardContainer.querySelectorAll("button");
 
 	const _clearScreen = () => {
-		const count = _rows * _columns;
-		for (let i = 0; i < count; i++) {
-			_btns[i].textContent = "";
-		}
+		_btns.forEach((btn) => (btn.textContent = ""));
 	};
 
 	const _updateScreen = (e) => {
@@ -230,10 +229,26 @@ const ScreenController = (function () {
 		_scoreBoard[2].textContent = scores.thanos;
 	};
 
+	const _blinkBoard = (count) => {
+		if (!count) return;
+		_boardContainer.style.backgroundColor =
+			_boardContainer.style.backgroundColor === "white"
+				? "rgba(255, 255, 255, 0.5)"
+				: "white";
+		setTimeout(_blinkBoard, _animationDelay, --count);
+	};
+
+	const _triggerDrawActions = () => {
+		//Animation
+		_btns.forEach((btn) => (btn.style.color = "rgba(255, 255, 255, 0.6)"));
+		_blinkBoard(_animationCount);
+	};
+
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "BUTTON") return;
 		if (_gameState.ended) {
 			_clearScreen();
+			_btns.forEach((btn) => (btn.style.color = "white"));
 			_changeGameState("active");
 			return;
 		}
@@ -246,6 +261,7 @@ const ScreenController = (function () {
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
+			if (result === 2) _triggerDrawActions();
 			_updateScores();
 		}
 	};
