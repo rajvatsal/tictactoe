@@ -45,6 +45,7 @@ footer {
   color: white;
   font-size: 6.6rem;
   font-family: inherit;
+  padding: 0;
 }
 
 #board-container > button:not(.filled) {
