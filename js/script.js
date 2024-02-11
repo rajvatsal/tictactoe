@@ -194,7 +194,7 @@ const ScreenController = (function () {
 	);
 
 	const _animationDelay = 150;
-	const _animationCount = 9;
+	const _animationCount = 6;
 	const _gameState = {
 		active: true,
 		ended: false,
