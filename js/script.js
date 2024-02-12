@@ -113,6 +113,7 @@ const GameController = (function () {
 
 	const getActivePlayer = () => _activePlayer;
 	const getScores = () => _scores;
+	const getPlayers = () => _players;
 
 	function _render() {
 		console.table(getBoard());
@@ -180,18 +181,17 @@ const GameController = (function () {
 		return result;
 	}
 
-	return { playRound, getActivePlayer, getScores };
+	return { playRound, getActivePlayer, getScores, getPlayers };
 })();
 
 const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
-	const { playRound, getActivePlayer, getScores } = GameController;
+	const { playRound, getActivePlayer, getScores, getPlayers } = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
+	const _players = getPlayers();
 
 	const _boardContainer = document.querySelector("#board-container");
-	const _scoreBoardChild = document.querySelectorAll(
-		"#score-board > :not(#mode) > span:nth-child(2)",
-	);
+	const _scoreBoard = document.querySelector("#score-board");
 
 	const _animationDelay = 150;
 	const _animationCount = 6;
@@ -199,6 +199,65 @@ const ScreenController = (function () {
 		active: true,
 		ended: false,
 	};
+
+	//Create board
+	for (let i = 0; i < _rows; i++) {
+		for (let j = 0; j < _columns; j++) {
+			const btn = document.createElement("button");
+			const span = document.createElement("span");
+			btn.appendChild(span);
+			span.setAttribute("data-pos", `${i}-${j}`);
+			_boardContainer.appendChild(btn);
+		}
+	}
+
+	//Create Score Board
+	for (let i = 0; i < 4; i++) {
+		let idVal = "",
+			spanOne = "",
+			spanTwo = "0";
+		switch (i) {
+			case 0:
+				idVal = _players[0].name;
+				spanOne = `${idVal}(${_players[0].mark})`;
+				break;
+			case 1:
+				idVal = "tie";
+				spanOne = "tie";
+				break;
+			case 2:
+				idVal = _players[1].name;
+				spanOne = `${idVal}(${_players[1].mark})`;
+				break;
+			case 3:
+				idVal = "mode";
+				spanTwo = "2P";
+				break;
+		}
+
+		const div = document.createElement("div");
+		const spanFirst = document.createElement("span");
+		const spanSecond = document.createElement("span");
+		div.setAttribute("id", idVal);
+		spanFirst.textContent = spanOne;
+		spanSecond.textContent = spanTwo;
+		if (idVal === "mode") {
+			const button = document.createElement("button");
+			div.appendChild(button);
+			div.appendChild(spanSecond);
+		} else {
+			div.appendChild(spanFirst);
+			div.appendChild(spanSecond);
+		}
+
+		_scoreBoard.appendChild(div);
+	}
+
+	const _scoreBoardVal = document.querySelectorAll(
+		"#score-board > :not(#mode) > span:nth-child(2)",
+	);
+	const _scoreBoardChild = document.querySelectorAll("#score-board>*");
+	const _btns = _boardContainer.querySelectorAll("button>span");
 
 	const _soundEffects = {
 		placeMark: new Audio("sound-effects/place-mark.mp3"),
@@ -231,19 +290,6 @@ const ScreenController = (function () {
 		_gameState.ended = state === "ended";
 	};
 
-	//Create board
-	for (let i = 0; i < _rows; i++) {
-		for (let j = 0; j < _columns; j++) {
-			const btn = document.createElement("button");
-			const span = document.createElement("span");
-			btn.appendChild(span);
-			span.setAttribute("data-pos", `${i}-${j}`);
-			_boardContainer.appendChild(btn);
-		}
-	}
-
-	const _btns = _boardContainer.querySelectorAll("button>span");
-
 	const _resetGame = () => {
 		_btns.forEach((btn) => {
 			_animationEffects.removeAppear(btn);
@@ -251,6 +297,7 @@ const ScreenController = (function () {
 			btn.style.opacity = "1";
 		});
 		_changeGameState("active");
+		_highlightActivePlayer();
 	};
 
 	const _updateScreen = (e) => {
@@ -260,9 +307,9 @@ const ScreenController = (function () {
 
 	const _updateScores = () => {
 		const scores = getScores();
-		_scoreBoardChild[0].textContent = scores.vatsal;
-		_scoreBoardChild[1].textContent = scores.tie;
-		_scoreBoardChild[2].textContent = scores.thanos;
+		_scoreBoardVal[0].textContent = scores.vatsal;
+		_scoreBoardVal[1].textContent = scores.tie;
+		_scoreBoardVal[2].textContent = scores.thanos;
 	};
 
 	const _triggerDrawActions = () => {
@@ -270,6 +317,15 @@ const ScreenController = (function () {
 		_animationEffects.blinkBoard(_animationCount);
 		_soundEffects.playSound("draw");
 	};
+
+	const _highlightActivePlayer = () => {
+		_scoreBoardChild.forEach((child) => {
+			child.style.opacity =
+				child.getAttribute("id") === getActivePlayer().name ? "1" : "0.5";
+		});
+	};
+	//Initial highlight
+	_highlightActivePlayer();
 
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "SPAN") return;
@@ -280,11 +336,18 @@ const ScreenController = (function () {
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		_updateScreen(e);
 		const result = playRound(x, y);
+		_highlightActivePlayer();
 
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
-			if (result === 2) setTimeout(_triggerDrawActions, 500);
+			if (result === 2) {
+				_scoreBoardChild.forEach((child) => {
+					child.style.opacity =
+						child.getAttribute("id") === "tie" ? "1" : "0.5";
+				});
+				setTimeout(_triggerDrawActions, 300);
+			}
 			_updateScores();
 		}
 	};
