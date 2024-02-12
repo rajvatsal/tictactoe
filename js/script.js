@@ -244,9 +244,13 @@ const ScreenController = (function () {
 
 	const _btns = _boardContainer.querySelectorAll("button>span");
 
-	const _clearScreen = () => {
-		_btns.forEach((btn) => (btn.textContent = ""));
-		_btns.forEach((btn) => _animationEffects.removeAppear(btn));
+	const _resetGame = () => {
+		_btns.forEach((btn) => {
+			_animationEffects.removeAppear(btn);
+			btn.textContent = "";
+			btn.style.opacity = "1";
+		});
+		_changeGameState("active");
 	};
 
 	const _updateScreen = (e) => {
@@ -269,12 +273,7 @@ const ScreenController = (function () {
 
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "SPAN") return;
-		if (_gameState.ended) {
-			_clearScreen();
-			_btns.forEach((btn) => (btn.style.opacity = "1"));
-			_changeGameState("active");
-			return;
-		}
+		if (_gameState.ended) return _resetGame();
 		if (e.target.textContent !== _emptyCell) return;
 
 		_soundEffects.playSound("placeMark");
