@@ -189,7 +189,7 @@ const ScreenController = (function () {
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 
 	const _boardContainer = document.querySelector("#board-container");
-	const _scoreBoard = document.querySelectorAll(
+	const _scoreBoardChild = document.querySelectorAll(
 		"#score-board > :not(#mode) > span:nth-child(2)",
 	);
 
@@ -260,9 +260,9 @@ const ScreenController = (function () {
 
 	const _updateScores = () => {
 		const scores = getScores();
-		_scoreBoard[0].textContent = scores.vatsal;
-		_scoreBoard[1].textContent = scores.tie;
-		_scoreBoard[2].textContent = scores.thanos;
+		_scoreBoardChild[0].textContent = scores.vatsal;
+		_scoreBoardChild[1].textContent = scores.tie;
+		_scoreBoardChild[2].textContent = scores.thanos;
 	};
 
 	const _triggerDrawActions = () => {
@@ -284,7 +284,7 @@ const ScreenController = (function () {
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
-			if (result === 2) setTimeout(_triggerDrawActions, 300);
+			if (result === 2) setTimeout(_triggerDrawActions, 500);
 			_updateScores();
 		}
 	};
