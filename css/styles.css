@@ -32,11 +32,11 @@ footer {
 #board-container {
   background-color: white;
   width: var(--ui-width);
-  margin: 50px 30px;
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template: repeat(3, 1fr) / repeat(3, 1fr);
   gap: 4px;
+  margin: 50px 30px;
 }
 
 #board-container > button {
@@ -46,7 +46,29 @@ footer {
   font-size: 6.6rem;
   font-family: inherit;
   padding: 0;
-  transition: color 500ms ease-out;
+}
+
+#board-container > button > span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transition: opacity 200ms ease-out;
+}
+
+#board-container > button > span.appear {
+  animation: appear 200ms cubic-bezier(0.5, 1.8, 0.1, 1.1);
+}
+
+@keyframes appear {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 #board-container > button:not(.filled) {

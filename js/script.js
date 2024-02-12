@@ -218,6 +218,12 @@ const ScreenController = (function () {
 					: "white";
 			setTimeout(this.blinkBoard.bind(this), _animationDelay, --count);
 		},
+		addAppear: function (element) {
+			element.classList.add("appear");
+		},
+		removeAppear: function (element) {
+			element.classList.remove("appear");
+		},
 	};
 
 	const _changeGameState = (state) => {
@@ -229,19 +235,23 @@ const ScreenController = (function () {
 	for (let i = 0; i < _rows; i++) {
 		for (let j = 0; j < _columns; j++) {
 			const btn = document.createElement("button");
-			btn.setAttribute("data-pos", `${i}-${j}`);
+			const span = document.createElement("span");
+			btn.appendChild(span);
+			span.setAttribute("data-pos", `${i}-${j}`);
 			_boardContainer.appendChild(btn);
 		}
 	}
 
-	const _btns = _boardContainer.querySelectorAll("button");
+	const _btns = _boardContainer.querySelectorAll("button>span");
 
 	const _clearScreen = () => {
 		_btns.forEach((btn) => (btn.textContent = ""));
+		_btns.forEach((btn) => _animationEffects.removeAppear(btn));
 	};
 
 	const _updateScreen = (e) => {
 		e.target.textContent = getActivePlayer().mark;
+		_animationEffects.addAppear(e.target);
 	};
 
 	const _updateScores = () => {
@@ -252,16 +262,16 @@ const ScreenController = (function () {
 	};
 
 	const _triggerDrawActions = () => {
-		_btns.forEach((btn) => (btn.style.color = "rgba(255, 255, 255, 0.4)"));
+		_btns.forEach((btn) => (btn.style.opacity = "0.5"));
 		_animationEffects.blinkBoard(_animationCount);
 		_soundEffects.playSound("draw");
 	};
 
 	const _clickHandlerBoard = (e) => {
-		if (e.target.tagName !== "BUTTON") return;
+		if (e.target.tagName !== "SPAN") return;
 		if (_gameState.ended) {
 			_clearScreen();
-			_btns.forEach((btn) => (btn.style.color = "white"));
+			_btns.forEach((btn) => (btn.style.opacity = "1"));
 			_changeGameState("active");
 			return;
 		}
@@ -275,7 +285,7 @@ const ScreenController = (function () {
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
-			if (result === 2) _triggerDrawActions();
+			if (result === 2) setTimeout(_triggerDrawActions, 300);
 			_updateScores();
 		}
 	};
