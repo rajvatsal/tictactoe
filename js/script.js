@@ -105,6 +105,13 @@ const GameController = (function () {
 
 	let _activePlayer = _players[0];
 	let _winner = "";
+	let _winningCombinations = {
+		vertical: (column) => [`0-${column}`, `1-${column}`, `2-${column}`],
+		horizontal: (row) => [`${row}-0`, `${row}-1`, `${row}-2`],
+		diagonalLeft: () => ["0-0", "1-1", "2-2"],
+		diagonalRight: () => ["0-2", "1-1", "2-0"],
+		combo: [],
+	};
 	const _scores = {
 		[_players[0].name]: 0,
 		[_players[1].name]: 0,
@@ -112,6 +119,7 @@ const GameController = (function () {
 	};
 
 	const getActivePlayer = () => _activePlayer;
+	const getWinningCombination = () => _winningCombinations.combo;
 	const getScores = () => _scores;
 	const getPlayers = () => _players;
 
@@ -127,24 +135,27 @@ const GameController = (function () {
 		for (let i = 0; i < _rows; i++) {
 			let vert = 0,
 				horz = 0,
-				leftDiagnoal = 0;
+				leftDiagonal = 0;
 
 			for (let j = 0; j < _columns; j++) {
 				if (_board[i][j] === _activePlayer.mark) horz++;
 				if (_board[j][i] === _activePlayer.mark) vert++;
-				if (_board[j][j] === _activePlayer.mark) leftDiagnoal++;
+				if (_board[j][j] === _activePlayer.mark) leftDiagonal++;
 			}
-
 			if (_board[i][_columns - 1 - i] === _activePlayer.mark) rightDiagonal++;
-			if (
-				rightDiagonal === _rows ||
-				vert === _columns ||
-				horz === _rows ||
-				leftDiagnoal === _rows
-			) {
-				_winner = _activePlayer.name;
-				return 1;
-			}
+
+			if (leftDiagonal === 3)
+				_winningCombinations.combo = _winningCombinations.diagonalLeft();
+			else if (rightDiagonal === 3)
+				_winningCombinations.combo = _winningCombinations.diagonalRight();
+			else if (vert === 3)
+				_winningCombinations.combo = _winningCombinations.vertical(i);
+			else if (horz === 3)
+				_winningCombinations.combo = _winningCombinations.horizontal(i);
+			else continue;
+
+			_winner = _activePlayer.name;
+			return 1;
 		}
 		// Draw Condition
 		let _draw = true;
@@ -181,12 +192,24 @@ const GameController = (function () {
 		return result;
 	}
 
-	return { playRound, getActivePlayer, getScores, getPlayers };
+	return {
+		playRound,
+		getActivePlayer,
+		getScores,
+		getPlayers,
+		getWinningCombination,
+	};
 })();
 
 const ScreenController = (function () {
 	const { getBoardSpec, getBoard } = Gameboard;
-	const { playRound, getActivePlayer, getScores, getPlayers } = GameController;
+	const {
+		playRound,
+		getActivePlayer,
+		getScores,
+		getPlayers,
+		getWinningCombination,
+	} = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const _players = getPlayers();
 
@@ -194,7 +217,7 @@ const ScreenController = (function () {
 	const _scoreBoard = document.querySelector("#score-board");
 
 	const _animationDelay = 150;
-	const _animationCount = 6;
+	const _animationCount = 5;
 	const _gameState = {
 		active: true,
 		ended: false,
@@ -262,9 +285,18 @@ const ScreenController = (function () {
 	const _soundEffects = {
 		placeMark: new Audio("sound-effects/place-mark.mp3"),
 		draw: new Audio("sound-effects/game-start.mp3"),
+		victory: new Audio("sound-effects/success-fanfare-trumpets.mp3"),
 		playSound: function (sound) {
 			this[sound].currentTime = 0;
 			this[sound].play();
+		},
+		stopSound: function () {
+			for (let sound in this) {
+				if (typeof this[sound] === "function") return;
+				if (!this.hasOwnProperty(sound)) return;
+
+				this[sound].pause();
+			}
 		},
 	};
 	const _animationEffects = {
@@ -283,6 +315,19 @@ const ScreenController = (function () {
 		removeAppear: function (element) {
 			element.classList.remove("appear");
 		},
+		winElements: [],
+		victory: function (count) {
+			if (count < 0 && this.winElements[0].style.color === "white") return;
+
+			this.winElements.forEach(
+				(element) =>
+					(element.style.color =
+						element.style.color === "white" || element.style.color === ""
+							? "transparent"
+							: "white"),
+			);
+			setTimeout(this.victory.bind(this), _animationDelay, --count);
+		},
 	};
 
 	const _changeGameState = (state) => {
@@ -298,6 +343,7 @@ const ScreenController = (function () {
 		});
 		_changeGameState("active");
 		_highlightActivePlayer();
+		_soundEffects.stopSound();
 	};
 
 	const _updateScreen = (e) => {
@@ -316,6 +362,22 @@ const ScreenController = (function () {
 		_btns.forEach((btn) => (btn.style.opacity = "0.5"));
 		_animationEffects.blinkBoard(_animationCount);
 		_soundEffects.playSound("draw");
+	};
+
+	const _highlightVictory = () => {
+		const combo = getWinningCombination();
+		const btns = [..._btns];
+		const winButton = btns.filter((btn) => {
+			if (combo.includes(btn.getAttribute("data-pos"))) return true;
+			else btn.style.opacity = 0.4;
+		});
+		_animationEffects.winElements = winButton;
+		setTimeout(
+			_animationEffects.victory.bind(_animationEffects),
+			280,
+			_animationCount,
+		);
+		_soundEffects.playSound("victory");
 	};
 
 	const _highlightActivePlayer = () => {
@@ -347,7 +409,7 @@ const ScreenController = (function () {
 						child.getAttribute("id") === "tie" ? "1" : "0.5";
 				});
 				setTimeout(_triggerDrawActions, 300);
-			}
+			} else _highlightVictory();
 			_updateScores();
 		}
 	};
