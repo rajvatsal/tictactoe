@@ -382,6 +382,7 @@ const ScreenController = (function () {
 
 	const _highlightActivePlayer = () => {
 		_scoreBoardChild.forEach((child) => {
+			if (child.getAttribute("id") === "mode") return;
 			if (child.getAttribute("id") === getActivePlayer().name) {
 				child.style.opacity = "1";
 				child.style.transform = "scale(1.1)";
