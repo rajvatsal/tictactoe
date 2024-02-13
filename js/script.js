@@ -382,8 +382,13 @@ const ScreenController = (function () {
 
 	const _highlightActivePlayer = () => {
 		_scoreBoardChild.forEach((child) => {
-			child.style.opacity =
-				child.getAttribute("id") === getActivePlayer().name ? "1" : "0.5";
+			if (child.getAttribute("id") === getActivePlayer().name) {
+				child.style.opacity = "1";
+				child.style.transform = "scale(1.1)";
+			} else {
+				child.style.opacity = "0.5";
+				child.style.transform = "";
+			}
 		});
 	};
 	//Initial highlight

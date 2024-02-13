@@ -92,7 +92,9 @@ footer {
 }
 
 #score-board > * {
-  transition: opacity 100ms;
+  transition:
+    opacity 200ms,
+    transform 200ms;
 }
 
 #score-board > #mode {
