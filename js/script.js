@@ -123,24 +123,24 @@ const GameController = (function () {
 		const _board = getBoard();
 
 		// Win condition
-		let diagR = 0;
+		let rightDiagonal = 0;
 		for (let i = 0; i < _rows; i++) {
 			let vert = 0,
 				horz = 0,
-				diagL = 0;
+				leftDiagnoal = 0;
 
 			for (let j = 0; j < _columns; j++) {
 				if (_board[i][j] === _activePlayer.mark) horz++;
 				if (_board[j][i] === _activePlayer.mark) vert++;
-				if (_board[j][j] === _activePlayer.mark) diagL++;
+				if (_board[j][j] === _activePlayer.mark) leftDiagnoal++;
 			}
 
-			if (_board[i][_columns - 1 - i] === _activePlayer.mark) diagR++;
+			if (_board[i][_columns - 1 - i] === _activePlayer.mark) rightDiagonal++;
 			if (
-				diagR === _rows ||
+				rightDiagonal === _rows ||
 				vert === _columns ||
 				horz === _rows ||
-				diagL === _rows
+				leftDiagnoal === _rows
 			) {
 				_winner = _activePlayer.name;
 				return 1;
