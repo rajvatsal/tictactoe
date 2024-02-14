@@ -299,6 +299,7 @@ const ScreenController = (function () {
 			}
 		},
 	};
+
 	const _animationEffects = {
 		blinkBoard: function (count) {
 			if (count < 0 && _boardContainer.style.backgroundColor === "white")
