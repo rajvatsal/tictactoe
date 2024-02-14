@@ -101,6 +101,7 @@ const GameController = (function () {
 	const _players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
 		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
+		Player.create({ name: "AI BOT", mark: "O", validPlayer: true }),
 	];
 
 	let _activePlayer = _players[0];
@@ -192,12 +193,27 @@ const GameController = (function () {
 		return result;
 	}
 
+	function _placeMarkAi() {
+		const board = getBoard();
+		const emptyCells = [];
+
+		for (let i = 0; i < _rows; i++) {
+			for (let j = 0; j < _columns; j++) {
+				if (board[i][j] === _emptyCell) emptyCells.push(`${i}-${j}`);
+			}
+		}
+		const randomCell = Math.floor(Math.random() * emptyCells.length);
+		const [x, y] = emptyCells[randomCell].split("-");
+		playRound(x, y);
+	}
+
 	return {
 		playRound,
 		getActivePlayer,
 		getScores,
 		getPlayers,
 		getWinningCombination,
+		_placeMarkAi,
 	};
 })();
 
