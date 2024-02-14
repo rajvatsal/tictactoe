@@ -1,3 +1,30 @@
+const events = (function () {
+	return {
+		events: {},
+		on: function (eventName, fn) {
+			this.events[eventName] = this.events[eventName] || [];
+			this.events[eventName].push(fn);
+		},
+		off: function (eventName, fn) {
+			if (this.events[eventName]) {
+				for (var i = 0; i < this.events[eventName].length; i++) {
+					if (this.events[eventName][i] === fn) {
+						this.events[eventName].splice(i, 1);
+						break;
+					}
+				}
+			}
+		},
+		emit: function (eventName, data) {
+			if (this.events[eventName]) {
+				this.events[eventName].forEach(function (fn) {
+					fn(data);
+				});
+			}
+		},
+	};
+})();
+
 const Gameboard = (function () {
 	const _emptyCell = "";
 	const _rows = 3;
@@ -100,8 +127,8 @@ const GameController = (function () {
 
 	const _players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
-		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
 		Player.create({ name: "AI BOT", mark: "O", validPlayer: true }),
+		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
 	];
 
 	let _activePlayer = _players[0];
@@ -188,8 +215,9 @@ const GameController = (function () {
 	function playRound(x, y) {
 		placeMark(_activePlayer, x, y);
 		_render();
-		const result = _checkGameStatus();
+		let result = _checkGameStatus();
 		result ? _gameOver(result) : _switchPlayer();
+		if (_activePlayer === _players[1] && !result) result = _placeMarkAi();
 		return result;
 	}
 
@@ -204,7 +232,7 @@ const GameController = (function () {
 		}
 		const randomCell = Math.floor(Math.random() * emptyCells.length);
 		const [x, y] = emptyCells[randomCell].split("-");
-		playRound(x, y);
+		events.emit("aiMove", `${x}-${y}`);
 	}
 
 	return {
@@ -213,7 +241,6 @@ const GameController = (function () {
 		getScores,
 		getPlayers,
 		getWinningCombination,
-		_placeMarkAi,
 	};
 })();
 
@@ -413,6 +440,16 @@ const ScreenController = (function () {
 	};
 	//Initial highlight
 	_highlightActivePlayer();
+
+	const _placeMarkAi = (coord) => {
+		const element = document.querySelector(`span[data-pos=\"${coord}\"]`);
+		const event = {
+			target: element,
+		};
+		setTimeout(_clickHandlerBoard, 350, event);
+	};
+
+	events.on("aiMove", _placeMarkAi);
 
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "SPAN") return;
