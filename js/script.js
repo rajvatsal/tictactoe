@@ -370,9 +370,11 @@ const ScreenController = (function () {
 
 	const _updateScores = () => {
 		const scores = getScores();
-		_scoreBoardVal[0].textContent = scores.vatsal;
-		_scoreBoardVal[1].textContent = scores.tie;
-		_scoreBoardVal[2].textContent = scores.thanos;
+		_scoreBoardVal.forEach((val, index) => {
+			const id = _scoreBoardChild[index].getAttribute("id");
+			if (id === "mode") return;
+			val.textContent = scores[id];
+		});
 	};
 
 	const _triggerDrawActions = () => {
