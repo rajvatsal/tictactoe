@@ -204,21 +204,15 @@ const GameController = (function () {
 			? (_activePlayer = _players[1])
 			: (_activePlayer = _players[0]);
 
+	const getAiObject = () =>
+		_players.filter((player) => (player.name === "AI BOT" ? true : false))[0];
+
 	function _gameOver(outcome) {
 		outcome === 1 ? _scores[_winner]++ : _scores["tie"]++;
 		outcome === 2 ? renderArt.gameOver(false) : renderArt.gameOver(true);
 		renderArt.gameOver(_winner);
 		console.table(_scores);
 		resetBoard();
-	}
-
-	function playRound(x, y) {
-		placeMark(_activePlayer, x, y);
-		_render();
-		let result = _checkGameStatus();
-		result ? _gameOver(result) : _switchPlayer();
-		if (_activePlayer === _players[1] && !result) result = _placeMarkAi();
-		return result;
 	}
 
 	function _placeMarkAi() {
@@ -235,12 +229,26 @@ const GameController = (function () {
 		events.emit("aiMove", `${x}-${y}`);
 	}
 
+	function playRound(x, y) {
+		placeMark(_activePlayer, x, y);
+		_render();
+		let result = _checkGameStatus();
+		result ? _gameOver(result) : _switchPlayer();
+		if (_activePlayer === getAiObject() && !result)
+			events.emit("activePlayerIsAi");
+
+		return result;
+	}
+
+	events.on("activePlayerIsAi", _placeMarkAi);
+
 	return {
 		playRound,
 		getActivePlayer,
 		getScores,
 		getPlayers,
 		getWinningCombination,
+		getAiObject,
 	};
 })();
 
@@ -252,6 +260,7 @@ const ScreenController = (function () {
 		getScores,
 		getPlayers,
 		getWinningCombination,
+		getAiObject,
 	} = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const _players = getPlayers();
@@ -388,6 +397,7 @@ const ScreenController = (function () {
 		_changeGameState("active");
 		_highlightActivePlayer();
 		_soundEffects.stopSound();
+		if (getActivePlayer() === getAiObject()) events.emit("activePlayerIsAi");
 	};
 
 	const _updateScreen = (e) => {
@@ -442,6 +452,7 @@ const ScreenController = (function () {
 	_highlightActivePlayer();
 
 	const _placeMarkAi = (coord) => {
+		if (_gameState.ended) return;
 		const element = document.querySelector(`span[data-pos=\"${coord}\"]`);
 		const event = {
 			target: element,
