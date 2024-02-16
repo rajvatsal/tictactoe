@@ -207,8 +207,7 @@ const GameController = (function () {
 		_render();
 		let result = _checkGameStatus();
 		result ? _gameOver(result) : _switchPlayer();
-		if (_activePlayer === getAiObject() && !result)
-			events.emit("activePlayerIsAi");
+		if (_activePlayer === getAiObject() && !result) _placeMarkAi();
 
 		return result;
 	}
