@@ -438,6 +438,7 @@ const ScreenController = (function () {
 		if (e.target.tagName !== "SPAN") return;
 		if (_gameState.ended) return _resetGame();
 		if (e.target.textContent !== _emptyCell) return;
+		if (getActivePlayer() === getAiObject() && e.type === "click") return;
 
 		_soundEffects.playSound("placeMark");
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
