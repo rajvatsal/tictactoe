@@ -199,7 +199,7 @@ const GameController = (function () {
 		}
 		const randomCell = Math.floor(Math.random() * emptyCells.length);
 		const [x, y] = emptyCells[randomCell].split("-");
-		events.emit("aiMove", `${x}-${y}`);
+		events.emit("aiClickBoard", `${x}-${y}`);
 	}
 
 	function playRound(x, y) {
@@ -432,7 +432,7 @@ const ScreenController = (function () {
 		setTimeout(_clickHandlerBoard, 350, event);
 	};
 
-	events.on("aiMove", _placeMarkAi);
+	events.on("aiClickBoard", _placeMarkAi);
 
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "SPAN") return;
