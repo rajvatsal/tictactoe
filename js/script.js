@@ -188,7 +188,7 @@ const GameController = (function () {
 		resetBoard();
 	}
 
-	function _placeMarkAi() {
+	function miniMaxAlgorithm() {
 		const board = getBoard();
 		const emptyCells = [];
 
@@ -198,8 +198,12 @@ const GameController = (function () {
 			}
 		}
 		const randomCell = Math.floor(Math.random() * emptyCells.length);
-		const [x, y] = emptyCells[randomCell].split("-");
-		events.emit("aiClickBoard", `${x}-${y}`);
+		return emptyCells[randomCell];
+	}
+
+	function _placeMarkAi() {
+		const cell = miniMaxAlgorithm();
+		events.emit("aiClickBoard", cell);
 	}
 
 	function playRound(x, y) {
