@@ -156,7 +156,7 @@ const GameController = (function () {
 			else continue;
 
 			_winner = _activePlayer.name;
-			return 1;
+			return 2;
 		}
 		// Draw Condition
 		let _draw = true;
@@ -168,7 +168,7 @@ const GameController = (function () {
 				}
 			}
 		}
-		if (_draw) return 2;
+		if (_draw) return 1;
 		return 0;
 	}
 
@@ -181,8 +181,8 @@ const GameController = (function () {
 		_players.filter((player) => (player.name === "AI BOT" ? true : false))[0];
 
 	function _gameOver(outcome) {
-		outcome === 1 ? _scores[_winner]++ : _scores["tie"]++;
-		outcome === 2 ? renderArt.gameOver(false) : renderArt.gameOver(true);
+		outcome === 2 ? _scores[_winner]++ : _scores["tie"]++;
+		outcome === 1 ? renderArt.gameOver(false) : renderArt.gameOver(true);
 		renderArt.gameOver(_winner);
 		console.table(_scores);
 		resetBoard();
@@ -453,7 +453,7 @@ const ScreenController = (function () {
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
-			if (result === 2) {
+			if (result === 1) {
 				_scoreBoardChild.forEach((child) => {
 					child.style.opacity =
 						child.getAttribute("id") === "tie" ? "1" : "0.5";
