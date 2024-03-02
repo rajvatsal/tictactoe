@@ -106,10 +106,6 @@ const GameController = (function () {
 
 	let _activePlayer = _players[0];
 	let _winner = "";
-	const _miniMaxData = {
-		bestMove: "",
-		board: [],
-	};
 	const _winningCombinations = {
 		vertical: (column) => [`0-${column}`, `1-${column}`, `2-${column}`],
 		horizontal: (row) => [`${row}-0`, `${row}-1`, `${row}-2`],
@@ -202,6 +198,11 @@ const GameController = (function () {
 		}
 		return possibleMoves;
 	}
+
+	const _miniMaxData = {
+		bestMove: "",
+		board: [],
+	};
 
 	function _miniMaxAlgorithm(board, max) {
 		// If it's a terminal node then return the following values
