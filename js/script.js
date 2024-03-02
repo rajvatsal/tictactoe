@@ -106,7 +106,11 @@ const GameController = (function () {
 
 	let _activePlayer = _players[0];
 	let _winner = "";
-	let _winningCombinations = {
+	const _miniMaxData = {
+		bestMove: "",
+		board: [],
+	};
+	const _winningCombinations = {
 		vertical: (column) => [`0-${column}`, `1-${column}`, `2-${column}`],
 		horizontal: (row) => [`${row}-0`, `${row}-1`, `${row}-2`],
 		diagonalLeft: () => ["0-0", "1-1", "2-2"],
@@ -129,8 +133,8 @@ const GameController = (function () {
 	}
 
 	function _checkGameStatus(player, gameBoard) {
-		const _board = gameBoard? gameBoard: getBoard();
-    const _activePlayer = player? player: getActivePlayer();
+		const _board = gameBoard ? gameBoard : getBoard();
+		const _activePlayer = player ? player : getActivePlayer();
 
 		// Win condition
 		let rightDiagonal = 0;
@@ -189,75 +193,70 @@ const GameController = (function () {
 		resetBoard();
 	}
 
-  function _getEmptyCells(board, possibleMoves) {
+	function _getEmptyCells(board) {
+		let possibleMoves = [];
 		for (let i = 0; i < _rows; i++) {
 			for (let j = 0; j < _columns; j++) {
 				if (board[i][j] === _emptyCell) possibleMoves.push(`${i}-${j}`);
 			}
 		}
-    return possibleMoves;
-  }
-
-	function _miniMaxAlgorithm(board, max, eval, bestMove) {
-    //calculate possible moves
-    let currentEval = 0;
-    const possibleMoves = _getEmptyCells(board, []);
-    if(max) {
-      possibleMoves.forEach(move => {
-        eval = eval === undefined? -Infinity: eval;
-        const [x,y] = move.split("-");
-        board[x][y] = "O";
-        let result = _checkGameStatus(_players[1], board);
-        if(result === 0) {
-          result = _checkGameStatus(_players[0], board);
-          if(result === 2)
-            currentEval = -1;
-          else
-            _miniMaxAlgorithm(_copyBoard(board), false, eval, bestMove)
-        }else if(result === 1){
-          currentEval = 0;
-        }else currentEval = 1;
-
-        if (currentEval >= eval) {
-          eval = currentEval;
-          bestMove = move;
-        }
-      });
-      return bestMove;
-    } else {
-      possibleMoves.forEach(move => {
-        eval = eval === -Infinity? Infinity: eval;
-        const [x,y] = move.split("-");
-        board[x][y] = "X";
-        let result = _checkGameStatus(_players[0], board);
-        if(result === 0) {
-          result = _checkGameStatus(_players[1], board);
-          if(result === 2){
-            currentEval = 1;
-            eval = currentEval <= eval? currentEval: eval;
-          }else
-            _miniMaxAlgorithm(_copyBoard(board), true, eval, bestMove)
-        }else if(result === 1){
-          currentEval = 0;
-        }else currentEval = -1;
-
-        if (currentEval <= eval) {
-          eval = currentEval;
-        }
-      });
-    }
+		return possibleMoves;
 	}
 
-  function _copyBoard(board) {
-    const copy = [];
-    board.forEach(row => copy.push(row.slice()));
-    return copy;
-  }
+	function _miniMaxAlgorithm(board, max) {
+		// If it's a terminal node then return the following values
+		let result = _checkGameStatus(_players[1], board);
+		if (result === 2) return 1;
+		else {
+			result = _checkGameStatus(_players[0], board);
+			if (result === 2) return -1;
+			else if (result === 1) return 0;
+		}
+
+		let emptyCells = _getEmptyCells(board);
+
+		if (max) {
+			let maxEval = -Infinity;
+			console.log("MAX: " + emptyCells);
+			for (let node of emptyCells) {
+				const [x, y] = node.split("-");
+				let myBoard = _getBoardCopy(board);
+				myBoard[x][y] = "O";
+				let currentEval = _miniMaxAlgorithm(myBoard, false);
+				if (currentEval > maxEval) {
+					_miniMaxData.bestMove = node;
+					maxEval = currentEval;
+				}
+				if (maxEval === 1) break;
+			}
+			return maxEval;
+		} else {
+			let minEval = Infinity;
+			console.log("MIN: " + emptyCells);
+			for (let node of emptyCells) {
+				const [x, y] = node.split("-");
+				let myBoard = _getBoardCopy(board);
+				myBoard[x][y] = "X";
+				let currentEval = _miniMaxAlgorithm(myBoard, true);
+				minEval = currentEval < minEval ? currentEval : minEval;
+				if (minEval === -1) break;
+			}
+			return minEval;
+		}
+	}
+
 	function _placeMarkAi() {
-   
-		let aiMove = _miniMaxAlgorithm(_copyBoard(getBoard()), true);
-    console.log("Cell: " + aiMove);
-		events.emit("aiClickBoard", aiMove);
+		_miniMaxData.board = _getBoardCopy();
+		_miniMaxAlgorithm(_getBoardCopy(), true);
+		console.log("Cell: " + _miniMaxData.bestMove);
+		events.emit("aiClickBoard", _miniMaxData.bestMove);
+	}
+
+	function _getBoardCopy(aiBoard) {
+		const copy = [];
+		const board = aiBoard || getBoard();
+		board.forEach((row) => copy.push(row.slice()));
+		return copy;
 	}
 
 	function playRound(x, y) {
