@@ -201,7 +201,6 @@ const GameController = (function () {
 
 	const _miniMaxData = {
 		bestMove: "",
-		board: [],
 	};
 
 	function _miniMaxAlgorithm(board, max) {
@@ -218,14 +217,13 @@ const GameController = (function () {
 
 		if (max) {
 			let maxEval = -Infinity;
-			console.log("MAX: " + emptyCells);
 			for (let node of emptyCells) {
 				const [x, y] = node.split("-");
 				let myBoard = _getBoardCopy(board);
 				myBoard[x][y] = "O";
 				let currentEval = _miniMaxAlgorithm(myBoard, false);
 				if (currentEval > maxEval) {
-					_miniMaxData.bestMove = node;
+					if (this.toString() === "fuck") _miniMaxData.bestMove = node;
 					maxEval = currentEval;
 				}
 				if (maxEval === 1) break;
@@ -233,13 +231,14 @@ const GameController = (function () {
 			return maxEval;
 		} else {
 			let minEval = Infinity;
-			console.log("MIN: " + emptyCells);
 			for (let node of emptyCells) {
 				const [x, y] = node.split("-");
 				let myBoard = _getBoardCopy(board);
 				myBoard[x][y] = "X";
 				let currentEval = _miniMaxAlgorithm(myBoard, true);
-				minEval = currentEval < minEval ? currentEval : minEval;
+				if (currentEval < minEval) {
+					minEval = currentEval;
+				}
 				if (minEval === -1) break;
 			}
 			return minEval;
@@ -247,9 +246,7 @@ const GameController = (function () {
 	}
 
 	function _placeMarkAi() {
-		_miniMaxData.board = _getBoardCopy();
-		_miniMaxAlgorithm(_getBoardCopy(), true);
-		console.log("Cell: " + _miniMaxData.bestMove);
+		_miniMaxAlgorithm.call("fuck", _getBoardCopy(), true);
 		events.emit("aiClickBoard", _miniMaxData.bestMove);
 	}
 
