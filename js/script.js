@@ -516,6 +516,7 @@ const ScreenController = (function () {
 				//Highlight tie on draw and remove everyother inline css that they have
 				_scoreBoardChild.forEach((child) => {
 					child.removeAttribute("style");
+					if (child.getAttribute("id") === "mode") return;
 					child.style.opacity =
 						child.getAttribute("id") === "tie" ? "1" : "0.5";
 				});
