@@ -449,7 +449,7 @@ const ScreenController = (function () {
 		_gameState.ended = state === "ended";
 	};
 
-	const _resetGame = () => {
+	const _restartGame = () => {
 		_btns.forEach((btn) => {
 			_animationEffects.removeAppear(btn);
 			btn.textContent = "";
@@ -533,7 +533,7 @@ const ScreenController = (function () {
 
 	const _clickHandlerBoard = (e) => {
 		if (e.target.tagName !== "SPAN") return;
-		if (_gameState.ended) return _resetGame();
+		if (_gameState.ended) return _restartGame();
 		if (e.target.textContent !== _emptyCell) return;
 		if (getActivePlayer() === getAiObject() && e.type === "click") return;
 
@@ -570,7 +570,7 @@ const ScreenController = (function () {
 		resetBoard();
 		_switchEnemyPlayers();
 		_updateScores();
-		_resetGame();
+		_restartGame();
 	};
 
 	_scoreBoardChild[_scoreBoardChild.length - 1].addEventListener(
