@@ -504,13 +504,18 @@ const ScreenController = (function () {
 		const [x, y] = e.target.getAttribute("data-pos").split("-");
 		_updateScreen(e);
 		const result = playRound(x, y);
-		_highlightActivePlayer();
+
+		//Only highlight active player when the game has not ended.
+		//This will resolve the animation glitch where the active player is highlighted on draw but only the tie on scroe board should be highlighted instead.
+		if (result === 0) _highlightActivePlayer();
 
 		//If game has ended
 		if (result) {
 			_changeGameState("ended");
 			if (result === 1) {
+				//Highlight tie on draw and remove everyother inline css that they have
 				_scoreBoardChild.forEach((child) => {
+					child.removeAttribute("style");
 					child.style.opacity =
 						child.getAttribute("id") === "tie" ? "1" : "0.5";
 				});
