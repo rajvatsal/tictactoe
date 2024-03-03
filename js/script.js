@@ -100,8 +100,8 @@ const GameController = (function () {
 
 	const _players = [
 		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
-		Player.create({ name: "AI BOT", mark: "O", validPlayer: true }),
 		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
+		Player.create({ name: "AI BOT", mark: "O", validPlayer: true }),
 	];
 
 	let _activePlayer = _players[0];
@@ -123,6 +123,29 @@ const GameController = (function () {
 	const getWinningCombination = () => _winningCombinations.combo;
 	const getScores = () => _scores;
 	const getPlayers = () => _players;
+
+	const _gameMode = {
+		pvp: true,
+		ai: false,
+	};
+
+	function switchGameMode() {
+		//switch modes
+		for (let mode in _gameMode) {
+			_gameMode[mode] = _gameMode[mode] ? false : true;
+		}
+		_activePlayer = _players[0];
+		//reset scores
+		for (let score in _scores) {
+			if (score === _players[1].name && _gameMode.ai) {
+				delete _scores[score];
+				_scores[_players[2].name] = 0;
+			} else if (score === _players[2].name && _gameMode.pvp) {
+				delete _scores[score];
+				_scores[_players[1].name] = 0;
+			} else _scores[score] = 0;
+		}
+	}
 
 	function _render() {
 		console.table(getBoard());
@@ -173,10 +196,14 @@ const GameController = (function () {
 		return 0;
 	}
 
-	const _switchPlayer = () =>
-		_activePlayer === _players[0]
-			? (_activePlayer = _players[1])
-			: (_activePlayer = _players[0]);
+	const _switchPlayer = () => {
+		_activePlayer =
+			_activePlayer === _players[0]
+				? _gameMode.pvp
+					? _players[1]
+					: _players[2]
+				: _players[0];
+	};
 
 	const getAiObject = () =>
 		_players.filter((player) => (player.name === "AI BOT" ? true : false))[0];
@@ -281,11 +308,12 @@ const GameController = (function () {
 		getPlayers,
 		getWinningCombination,
 		getAiObject,
+		switchGameMode,
 	};
 })();
 
 const ScreenController = (function () {
-	const { getBoardSpec, getBoard } = Gameboard;
+	const { getBoardSpec, resetBoard } = Gameboard;
 	const {
 		playRound,
 		getActivePlayer,
@@ -293,6 +321,7 @@ const ScreenController = (function () {
 		getPlayers,
 		getWinningCombination,
 		getAiObject,
+		switchGameMode,
 	} = GameController;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const _players = getPlayers();
@@ -437,6 +466,14 @@ const ScreenController = (function () {
 		_animationEffects.addAppear(e.target);
 	};
 
+	const _switchEnemyPlayers = () => {
+		let player = 1;
+		if (_scoreBoardChild[2].getAttribute("id") === _players[1].name) player = 2;
+		_scoreBoardChild[2].id = _players[player].name;
+		_scoreBoardChild[2].querySelector(":first-child").textContent =
+			`${_players[player].name}(${_players[player].mark})`;
+	};
+
 	const _updateScores = () => {
 		const scores = getScores();
 		_scoreBoardVal.forEach((val, index) => {
@@ -527,4 +564,17 @@ const ScreenController = (function () {
 	};
 
 	_boardContainer.addEventListener("click", _clickHandlerBoard);
+
+	const _clickHandlerGameMode = () => {
+		switchGameMode();
+		resetBoard();
+		_switchEnemyPlayers();
+		_updateScores();
+		_resetGame();
+	};
+
+	_scoreBoardChild[_scoreBoardChild.length - 1].addEventListener(
+		"click",
+		_clickHandlerGameMode,
+	);
 })();
