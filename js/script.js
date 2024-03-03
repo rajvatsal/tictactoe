@@ -261,7 +261,12 @@ const GameController = (function () {
 		placeMark(_activePlayer, x, y);
 		_render();
 		let result = _checkGameStatus();
-		result ? _gameOver(result) : _switchPlayer();
+		if (!result) _switchPlayer();
+		else {
+			_gameOver(result);
+			if (result === 1) _switchPlayer();
+		}
+
 		if (_activePlayer === getAiObject() && !result) _placeMarkAi();
 
 		return result;
