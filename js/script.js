@@ -366,7 +366,7 @@ const ScreenController = (function () {
 				spanOne = `${idVal}(${_players[1].mark})`;
 				break;
 			case 3:
-				idVal = "mode";
+				idVal = "mode-pvp";
 				spanTwo = "2P";
 				break;
 		}
@@ -377,7 +377,7 @@ const ScreenController = (function () {
 		div.setAttribute("id", idVal);
 		spanFirst.textContent = spanOne;
 		spanSecond.textContent = spanTwo;
-		if (idVal === "mode") {
+		if (idVal === "mode-pvp") {
 			const button = document.createElement("button");
 			div.appendChild(button);
 			div.appendChild(spanSecond);
@@ -478,7 +478,7 @@ const ScreenController = (function () {
 		const scores = getScores();
 		_scoreBoardVal.forEach((val, index) => {
 			const id = _scoreBoardChild[index].getAttribute("id");
-			if (id === "mode") return;
+			if (id === "mode-pvp") return;
 			val.textContent = scores[id];
 		});
 	};
@@ -507,7 +507,7 @@ const ScreenController = (function () {
 
 	const _highlightActivePlayer = () => {
 		_scoreBoardChild.forEach((child) => {
-			if (child.getAttribute("id") === "mode") return;
+			if (child.getAttribute("id") === "mode-pvp") return;
 			if (child.getAttribute("id") === getActivePlayer().name) {
 				child.style.opacity = "1";
 				child.style.transform = "scale(1.1)";
@@ -553,7 +553,7 @@ const ScreenController = (function () {
 				//Highlight tie on draw and remove everyother inline css that they have
 				_scoreBoardChild.forEach((child) => {
 					child.removeAttribute("style");
-					if (child.getAttribute("id") === "mode") return;
+					if (child.getAttribute("id") === "mode-pvp") return;
 					child.style.opacity =
 						child.getAttribute("id") === "tie" ? "1" : "0.5";
 				});
