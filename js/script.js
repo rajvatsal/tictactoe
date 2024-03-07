@@ -130,9 +130,11 @@ const GameController = (function () {
 	};
 
 	function switchGameMode() {
+		let currentMode;
 		//switch modes
 		for (let mode in _gameMode) {
 			_gameMode[mode] = _gameMode[mode] ? false : true;
+			currentMode = _gameMode[mode] ? mode : currentMode;
 		}
 		_activePlayer = _players[0];
 		//reset scores
@@ -145,6 +147,7 @@ const GameController = (function () {
 				_scores[_players[1].name] = 0;
 			} else _scores[score] = 0;
 		}
+		return currentMode;
 	}
 
 	function _render() {
@@ -466,12 +469,24 @@ const ScreenController = (function () {
 		_animationEffects.addAppear(e.target);
 	};
 
-	const _switchEnemyPlayers = () => {
-		let player = 1;
-		if (_scoreBoardChild[2].getAttribute("id") === _players[1].name) player = 2;
-		_scoreBoardChild[2].id = _players[player].name;
+	const _switchAdversary = (mode) => {
+		let playerIndex = mode === "pvp" ? 1 : 2;
+
+		//change the name of second player that is _scoreBoardChild[2] to the other enemy;
+		_scoreBoardChild[2].id = _players[playerIndex].name;
 		_scoreBoardChild[2].querySelector(":first-child").textContent =
-			`${_players[player].name}(${_players[player].mark})`;
+			`${_players[playerIndex].name}(${_players[playerIndex].mark})`;
+
+		//change the icons for current mode button
+		if (playerIndex === 1) {
+			_scoreBoardChild[3].querySelector(":first-child").style.backgroundImage =
+				"url(icons/two-player.svg";
+			_scoreBoardChild[3].querySelector(":nth-child(2)").textContent = "2P";
+		} else {
+			_scoreBoardChild[3].querySelector(":first-child").style.backgroundImage =
+				"url(icons/single-player.svg)";
+			_scoreBoardChild[3].querySelector(":nth-child(2)").textContent = "1P";
+		}
 	};
 
 	const _updateScores = () => {
@@ -566,9 +581,9 @@ const ScreenController = (function () {
 	_boardContainer.addEventListener("click", _clickHandlerBoard);
 
 	const _clickHandlerGameMode = () => {
-		switchGameMode();
+		let currentMode = switchGameMode();
 		resetBoard();
-		_switchEnemyPlayers();
+		_switchAdversary(currentMode);
 		_updateScores();
 		_restartGame();
 	};
