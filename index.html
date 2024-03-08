@@ -9,9 +9,26 @@
 </head>
 
 <body>
-  <header></header>
+  <header>
+    <h1>TicTacToe</h1>
+  </header>
   <main>
-    <button>Press Me</button>
+    <form action="" method="post">
+      <fieldset>
+        <legend>Enter Name</legend>
+        <div>
+          <label for="player_one">Player one (X)</label>
+          <input type="text" id="player_one" name="player_one" placeholder="Vatsal" maxlength="9" required
+            title="Two players can't have the same name. A player cannot name himself ' AI BOT' " />
+        </div>
+        <div>
+          <label for=" player_two">Player two (O)</label>
+          <input type="text" id="player_two" name="player_two" placeholder="Thanos" maxlength="9" required
+            title="Two players can't have the same name. A player cannot name himself ' AI BOT' " />
+        </div>
+        <button type="submit">START</button>
+      </fieldset>
+    </form>
   </main>
   <footer></footer>
   <script src="js/pubsub.js"></script>

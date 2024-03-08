@@ -1,14 +1,28 @@
 const startGame = (() => {
-	const startBtn = document.querySelector("main>button");
+	const startBtn = document.querySelector("fieldset>button");
 	const head = document.querySelector("head");
 	const body = document.querySelector("body");
-	startBtn.addEventListener("click", () => {
-		// remove splash css and children of main
-		head.querySelector('link[src="css/splash-screen.css"]').remove();
-		body.querySelector("main").remove();
-		body.querySelector("header").remove();
-		body.prepend(document.createElement("main"));
+	const player_one = document.getElementById("player_one");
+	const player_two = document.getElementById("player_two");
 
+	const purgeSplashScreen = () => {
+		head.querySelector('link[src="css/splash-screen.css"]').remove();
+		body.querySelector("header").remove();
+		body.querySelector("main").remove();
+		body.prepend(document.createElement("main"));
+	};
+
+	startBtn.addEventListener("click", function (e) {
+		if (
+			!player_one.checkValidity() ||
+			!player_two.checkValidity() ||
+			player_one.value === player_two.value ||
+			player_one.value === "AI BOT" ||
+			player_two.value === "AI BOT"
+		)
+			return;
+
+		e.preventDefault();
 		const styleSheet = document.createElement("link");
 		styleSheet.rel = "stylesheet";
 		styleSheet.href = "css/styles.css";
@@ -18,4 +32,6 @@ const startGame = (() => {
 		script.src = "js/script.js";
 		body.appendChild(script);
 	});
+
+	return { purgeSplashScreen };
 })();

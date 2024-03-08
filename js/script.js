@@ -97,10 +97,14 @@ const renderArt = (function () {
 const GameController = (function () {
 	const { getBoardSpec, placeMark, getBoard, resetBoard } = Gameboard;
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
+	const _playerNames = [
+		document.getElementById("player_one").value,
+		document.getElementById("player_two").value,
+	];
 
 	const _players = [
-		Player.create({ name: "vatsal", mark: "X", validPlayer: true }),
-		Player.create({ name: "thanos", mark: "O", validPlayer: true }),
+		Player.create({ name: _playerNames[0], mark: "X", validPlayer: true }),
+		Player.create({ name: _playerNames[1], mark: "O", validPlayer: true }),
 		Player.create({ name: "AI BOT", mark: "O", validPlayer: true }),
 	];
 
@@ -316,6 +320,8 @@ const GameController = (function () {
 })();
 
 const ScreenController = (function () {
+	startGame.purgeSplashScreen();
+
 	const { getBoardSpec, resetBoard } = Gameboard;
 	const {
 		playRound,
