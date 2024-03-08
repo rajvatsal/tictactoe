@@ -329,8 +329,14 @@ const ScreenController = (function () {
 	const { _rows, _columns, _emptyCell } = getBoardSpec();
 	const _players = getPlayers();
 
-	const _boardContainer = document.querySelector("#board-container");
-	const _scoreBoard = document.querySelector("#score-board");
+	//create and board container and score board to main
+	const main = document.querySelector("main");
+	const _boardContainer = document.createElement("div");
+	const _scoreBoard = document.createElement("div");
+	_boardContainer.id = "board-container";
+	_scoreBoard.id = "score-board";
+	main.appendChild(_boardContainer);
+	main.appendChild(_scoreBoard);
 
 	const _animationDelay = 150;
 	const _animationCount = 5;
