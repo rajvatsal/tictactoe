@@ -6,7 +6,8 @@ const startGame = (() => {
 		// remove splash css and children of main
 		head.querySelector('link[src="css/splash-screen.css"]').remove();
 		body.querySelector("main").remove();
-		body.querySelector("header").after(document.createElement("main"));
+		body.querySelector("header").remove();
+		body.prepend(document.createElement("main"));
 
 		const styleSheet = document.createElement("link");
 		styleSheet.rel = "stylesheet";
