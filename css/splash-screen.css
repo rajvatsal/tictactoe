@@ -1,0 +1,81 @@
+@import url("https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap");
+
+:root {
+  --gradient: linear-gradient(315deg, #f06543 0%, #ffbe3d 74%);
+  --button-gradient: linear-gradient(315deg, #f06543 0%, #ffbe3d 74%);
+  --background: #f06543;
+}
+
+body {
+  background-color: black;
+  color: white;
+  font-family: "Protest Riot", sans-serif;
+  font-weight: 400;
+}
+
+header > h1 {
+  text-align: center;
+  font-weight: 400;
+  color: white;
+  font-size: 5rem;
+  /* background-color: var(--background); */
+  background-image: var(--gradient);
+  color: transparent;
+  background-clip: text;
+}
+
+form {
+  display: flex;
+  justify-content: center;
+}
+
+fieldset {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  width: 300px;
+  flex-wrap: wrap;
+  background-color: black;
+  border: solid 2px #f8ff0021;
+  border-radius: 15px;
+}
+
+fieldset > legend {
+  font-size: 1.8rem;
+}
+
+fieldset > div {
+  display: flex;
+  flex-direction: column;
+}
+
+fieldset > button {
+  cursor: pointer;
+  height: 50px;
+  font-weight: bold;
+  font-size: 1.4rem;
+  font-family: inherit;
+  border: 0;
+  transition: all 800ms ease;
+  background-image: var(--button-gradient);
+  background-size: 200% auto;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+fieldset > button:hover {
+  background-position: 100% 50%;
+}
+
+#player_one,
+#player_two {
+  border: 0;
+  outline: none;
+  border-radius: 10px;
+  height: 20px;
+  padding: 5px 10px;
+  background-color: #ffbe3d0a;
+  color: white;
+  font-family: "Inter Tight", sans-serif;
+}

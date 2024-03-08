@@ -6,7 +6,7 @@ const startGame = (() => {
 	const player_two = document.getElementById("player_two");
 
 	const purgeSplashScreen = () => {
-		head.querySelector('link[src="css/splash-screen.css"]').remove();
+		head.querySelector('link[href="css/splash-screen.css"]').remove();
 		body.querySelector("header").remove();
 		body.querySelector("main").remove();
 		body.prepend(document.createElement("main"));
