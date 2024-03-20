@@ -190,15 +190,9 @@ const GameController = (function () {
 			return 2;
 		}
 		// Draw Condition
-		let _draw = true;
-		outerLoop: for (let i = 0; i < _rows; i++) {
-			for (let j = 0; j < _columns; j++) {
-				if (_board[i][j] === _emptyCell) {
-					_draw = false;
-					break outerLoop;
-				}
-			}
-		}
+		const _draw = _board.every((row) =>
+			row.every((item) => item !== _emptyCell),
+		);
 		if (_draw) return 1;
 		return 0;
 	}
